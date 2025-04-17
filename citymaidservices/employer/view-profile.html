@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Employer Profile - City Maid Services</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Add Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Make Supabase client available globally
+        window.supabaseClient = supabase;
+    </script>
+    <!-- Add Supabase Configuration -->
+    <script src="../js/supabase-config.js"></script>
+    <style>
+        :root {
+            --brand-primary: #4F46E5;
+            --brand-secondary: #818CF8;
+            --brand-light: #EEF2FF;
+            --text-primary: #1F2937;
+            --text-secondary: #4B5563;
+            --text-light: #9CA3AF;
+            --background-light: #F9FAFB;
+            --white: #FFFFFF;
+            --error: #EF4444;
+            --success: #10B981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-light);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Navigation */
+        nav {
+            background-color: var(--white);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--brand-primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--brand-primary);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        .profile-container {
+            background-color: var(--white);
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .profile-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--brand-primary);
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-title {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--brand-primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--brand-secondary);
+        }
+
+        .btn-secondary {
+            background-color: var(--background-light);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--text-light);
+        }
+
+        .profile-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--text-light);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            margin-bottom: 1rem;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            color: var(--text-primary);
+        }
+
+        .job-requirements {
+            margin-top: 1.5rem;
+        }
+
+        .requirement-item {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--text-light);
+        }
+
+        .requirement-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .requirement-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .requirement-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .requirement-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .requirement-detail i {
+            color: var(--brand-primary);
+        }
+
+        .requirement-description {
+            color: var(--text-primary);
+            margin-top: 0.5rem;
+        }
+
+        .error-message {
+            background-color: #FEE2E2;
+            color: var(--error);
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+            display: none;
+        }
+
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--brand-light);
+            border-top: 4px solid var(--brand-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--white);
+            padding: 1.5rem 0;
+            text-align: center;
+            border-top: 1px solid var(--text-light);
+        }
+
+        .footer-content {
+            color: var(--text-secondary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .profile-container {
+                padding: 1.5rem;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-photo {
+                width: 120px;
+                height: 120px;
+            }
+
+            .profile-actions {
+                justify-content: center;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .requirement-details {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Mobile Menu Styles */
+        .mobile-menu {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
+                <div class="flex items-center">
+                    <a href="../index.html" class="text-3xl font-bold text-brand-primary tracking-tight">City<span class="text-brand-secondary">Maid</span></a>
+                </div>
+                <!-- Mobile menu button -->
+                <div class="flex items-center md:hidden">
+                    <button id="mobileMenuBtn" class="text-gray-700 hover:text-brand-primary focus:outline-none" aria-label="Open menu">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+                <!-- Desktop menu -->
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="../index.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Home</a>
+                    <a href="../jobs/find-maids.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Find Maids</a>
+                    <a href="../jobs/find-jobs.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Find Jobs</a>
+                    <a href="../static/contact.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Contact Us</a>
+                    <a href="../static/about.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">About Us</a>
+                    <a href="../auth/login.html" class="bg-brand-primary text-white px-6 py-3 rounded-lg hover:bg-brand-secondary font-semibold transition-colors">Sign In</a>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile menu panel -->
+        <div id="mobileMenu" class="hidden md:hidden fixed inset-0 bg-black bg-opacity-50 z-50" style="display: none;">
+            <div class="fixed inset-y-0 right-0 max-w-xs w-full bg-white shadow-xl">
+                <div class="flex items-center justify-between p-4 border-b">
+                    <div class="flex items-center space-x-4">
+                        <button id="closeMobileMenu" class="text-gray-500 hover:text-gray-700" aria-label="Close menu">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                        <span class="text-lg font-semibold">Menu</span>
+                    </div>
+                </div>
+                <div class="p-4 space-y-4">
+                    <a href="../index.html" class="block text-gray-700 hover:text-brand-primary font-medium transition-colors">Home</a>
+                    <a href="../jobs/find-maids.html" class="block text-gray-700 hover:text-brand-primary font-medium transition-colors">Find Maids</a>
+                    <a href="../jobs/find-jobs.html" class="block text-gray-700 hover:text-brand-primary font-medium transition-colors">Find Jobs</a>
+                    <a href="../static/contact.html" class="block text-gray-700 hover:text-brand-primary font-medium transition-colors">Contact Us</a>
+                    <a href="../static/about.html" class="block text-gray-700 hover:text-brand-primary font-medium transition-colors">About Us</a>
+                    <a href="../auth/login.html" class="block bg-brand-primary text-white px-6 py-3 rounded-lg hover:bg-brand-secondary font-semibold transition-colors text-center">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <div class="error-message" id="errorMessage"></div>
+            
+            <div class="loading-spinner" id="loadingSpinner">
+                <div class="spinner"></div>
+            </div>
+            
+            <div class="profile-container" id="profileContainer" style="display: none;">
+                <div class="profile-header">
+                    <img src="../assets/images/default-profile.jpg" alt="Profile Photo" class="profile-photo" id="profilePhoto">
+                    <div class="profile-info">
+                        <h1 class="profile-name" id="profileName">Loading...</h1>
+                        <p class="profile-title" id="profileTitle">Employer</p>
+                        <div class="profile-actions">
+                            <a href="edit-profile.html" class="btn btn-primary" id="editProfileBtn">
+                                <i class="fas fa-edit"></i> Edit Profile
+                            </a>
+                            <a href="../index.html" class="btn btn-secondary">
+                                <i class="fas fa-home"></i> Back to Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-section">
+                    <h2 class="section-title">Personal Information</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Full Name</div>
+                            <div class="info-value" id="fullName">Loading...</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Email</div>
+                            <div class="info-value" id="email">Loading...</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Phone</div>
+                            <div class="info-value" id="phone">Loading...</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Address</div>
+                            <div class="info-value" id="address">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-section">
+                    <h2 class="section-title">Job Requirements</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Job Title</div>
+                            <div class="info-value" id="jobTitle">Loading...</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Job Type</div>
+                            <div class="info-value" id="jobType">Loading...</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Salary Range</div>
+                            <div class="info-value" id="salaryRange">Loading...</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Work Hours</div>
+                            <div class="info-value" id="workHours">Loading...</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Start Date</div>
+                            <div class="info-value" id="startDate">Loading...</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Location</div>
+                            <div class="info-value" id="location">Loading...</div>
+                        </div>
+                    </div>
+                    
+                    <div class="job-requirements">
+                        <h3 style="margin-bottom: 1rem;">Job Description</h3>
+                        <div class="info-value" id="jobDescription">Loading...</div>
+                        
+                        <h3 style="margin-top: 1.5rem; margin-bottom: 1rem;">Required Skills</h3>
+                        <div class="info-value" id="requiredSkills">Loading...</div>
+                        
+                        <h3 style="margin-top: 1.5rem; margin-bottom: 1rem;">Additional Requirements</h3>
+                        <div class="info-value" id="additionalRequirements">Loading...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <p>&copy; <span id="currentYear"></span> City Maid Services. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu functionality
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            document.getElementById('mobileMenu').classList.remove('hidden');
+            document.getElementById('mobileMenu').style.display = 'block';
+        });
+
+        document.getElementById('closeMobileMenu').addEventListener('click', function() {
+            document.getElementById('mobileMenu').classList.add('hidden');
+            document.getElementById('mobileMenu').style.display = 'none';
+        });
+
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Get profile ID from URL
+        function getProfileIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return 'Not specified';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        // Load profile data
+        async function loadProfile() {
+            try {
+                const profileId = getProfileIdFromUrl();
+                if (!profileId) {
+                    throw new Error('Profile ID not found in URL');
+                }
+
+                // Initialize Supabase client
+                const supabase = initSupabase();
+                if (!supabase) {
+                    throw new Error('Failed to initialize Supabase client. Please check your internet connection and try again.');
+                }
+
+                // Get current user
+                const { data: { user }, error: userError } = await supabase.auth.getUser();
+                if (userError) {
+                    console.error('User authentication error:', userError);
+                    throw new Error(`Authentication error: ${userError.message}. Please try logging in again.`);
+                }
+
+                if (!user) {
+                    throw new Error('You must be logged in to view this profile. Please sign in first.');
+                }
+
+                // Fetch profile data with timeout
+                const fetchWithTimeout = async (promise, timeout = 10000) => {
+                    const timeoutPromise = new Promise((_, reject) => {
+                        setTimeout(() => reject(new Error('Request timed out. Please check your internet connection.')), timeout);
+                    });
+                    return Promise.race([promise, timeoutPromise]);
+                };
+
+                const profilePromise = supabase
+                    .from('employer_profiles')
+                    .select('*')
+                    .eq('id', profileId)
+                    .single();
+
+                const { data: profile, error: profileError } = await fetchWithTimeout(profilePromise);
+
+                if (profileError) {
+                    console.error('Profile fetch error:', profileError);
+                    if (profileError.code === 'PGRST116') {
+                        throw new Error('Profile not found. The requested profile does not exist.');
+                    } else if (profileError.code === 'PGRST301') {
+                        throw new Error('Database error. Please try again later.');
+                    } else {
+                        throw new Error(`Error loading profile: ${profileError.message}`);
+                    }
+                }
+
+                if (!profile) {
+                    throw new Error('Profile not found. The requested profile does not exist.');
+                }
+
+                // Check if the profile belongs to the current user
+                if (profile.user_id !== user.id) {
+                    throw new Error('You do not have permission to view this profile.');
+                }
+
+                // Render profile data
+                renderProfile(profile);
+                
+                // Hide loading spinner and show profile
+                document.getElementById('loadingSpinner').style.display = 'none';
+                document.getElementById('profileContainer').style.display = 'block';
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                showError(error.message);
+                document.getElementById('loadingSpinner').style.display = 'none';
+                
+                // Add retry button for network errors
+                if (error.message.includes('connection') || error.message.includes('timed out')) {
+                    const errorElement = document.getElementById('errorMessage');
+                    const retryButton = document.createElement('button');
+                    retryButton.className = 'btn btn-primary';
+                    retryButton.style.marginTop = '1rem';
+                    retryButton.textContent = 'Retry';
+                    retryButton.onclick = loadProfile;
+                    errorElement.appendChild(document.createElement('br'));
+                    errorElement.appendChild(retryButton);
+                }
+            }
+        }
+
+        // Render profile data
+        function renderProfile(profile) {
+            // Profile header
+            document.getElementById('profileName').textContent = profile.full_name || 'Not specified';
+            
+            // Set profile photo if available
+            if (profile.profile_photo) {
+                document.getElementById('profilePhoto').src = profile.profile_photo;
+            }
+            
+            // Personal Information
+            document.getElementById('fullName').textContent = profile.full_name || 'Not specified';
+            document.getElementById('email').textContent = profile.email || 'Not specified';
+            document.getElementById('phone').textContent = profile.phone || 'Not specified';
+            document.getElementById('address').textContent = profile.address || 'Not specified';
+            
+            // Job Requirements
+            document.getElementById('jobTitle').textContent = profile.job_title || 'Not specified';
+            document.getElementById('jobType').textContent = profile.job_type || 'Not specified';
+            document.getElementById('salaryRange').textContent = profile.salary_range || 'Not specified';
+            document.getElementById('workHours').textContent = profile.work_hours || 'Not specified';
+            document.getElementById('startDate').textContent = formatDate(profile.start_date);
+            document.getElementById('location').textContent = profile.location || 'Not specified';
+            
+            // Job Description
+            document.getElementById('jobDescription').textContent = profile.job_description || 'Not specified';
+            
+            // Required Skills
+            document.getElementById('requiredSkills').textContent = profile.required_skills || 'Not specified';
+            
+            // Additional Requirements
+            document.getElementById('additionalRequirements').textContent = profile.additional_requirements || 'Not specified';
+            
+            // Update edit profile button with profile ID
+            document.getElementById('editProfileBtn').href = `edit-profile.html?id=${profile.id}`;
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Wait for Supabase to be initialized
+                await waitForSupabase();
+                
+                // Check if Supabase library is loaded
+                if (typeof supabase === 'undefined') {
+                    throw new Error('Supabase library not loaded. Please check your internet connection and refresh the page.');
+                }
+
+                const supabase = window.supabaseClient;
+                if (!supabase) {
+                    throw new Error('Failed to initialize Supabase client. Please check your internet connection and try again.');
+                }
+
+                const { data: { session }, error } = await supabase.auth.getSession();
+                if (error) {
+                    console.error('Session error:', error);
+                    throw new Error(`Authentication error: ${error.message}. Please try logging in again.`);
+                }
+
+                if (!session) {
+                    window.location.href = '../auth/login.html';
+                    return;
+                }
+
+                // Load profile data
+                loadProfile();
+            } catch (error) {
+                console.error('Authentication error:', error);
+                showError(error.message);
+                
+                // Add retry button for network errors
+                if (error.message.includes('connection') || error.message.includes('not loaded')) {
+                    const errorElement = document.getElementById('errorMessage');
+                    const retryButton = document.createElement('button');
+                    retryButton.className = 'btn btn-primary';
+                    retryButton.style.marginTop = '1rem';
+                    retryButton.textContent = 'Retry';
+                    retryButton.onclick = () => window.location.reload();
+                    errorElement.appendChild(document.createElement('br'));
+                    errorElement.appendChild(retryButton);
+                } else {
+                    // Redirect to login for auth errors
+                    setTimeout(() => {
+                        window.location.href = '../auth/login.html';
+                    }, 3000);
+                }
+            }
+        });
+
+        // Wait for Supabase to be initialized
+        async function waitForSupabase() {
+            return new Promise((resolve, reject) => {
+                let attempts = 0;
+                const maxAttempts = 20;
+                const checkInterval = setInterval(() => {
+                    attempts++;
+                    console.log(`Waiting for Supabase client... Attempt: ${attempts}`);
+                    
+                    if (window.supabaseClient) {
+                        clearInterval(checkInterval);
+                        resolve(window.supabaseClient);
+                    } else if (attempts >= maxAttempts) {
+                        clearInterval(checkInterval);
+                        reject(new Error('Supabase client initialization timeout. Please refresh the page.'));
+                    }
+                }, 500);
+            });
+        }
+    </script>
+</body>
+</html> 

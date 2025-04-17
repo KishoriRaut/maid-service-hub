@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maid Profiles - City Maid Services</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="../js/maid-profiles.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <h1 class="text-3xl font-bold text-gray-900">Maid Profiles</h1>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <!-- Filters Section -->
+        <div class="bg-white shadow rounded-lg p-6 mb-6">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">Filter Profiles</h2>
+            <form id="filter-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="city-filter" class="block text-sm font-medium text-gray-700">City</label>
+                    <input type="text" id="city-filter" name="city" placeholder="e.g. Kathmandu"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <div>
+                    <label for="working-time-filter" class="block text-sm font-medium text-gray-700">Working Time</label>
+                    <select id="working-time-filter" name="working_time"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">All</option>
+                        <option value="morning">Morning</option>
+                        <option value="day">Day</option>
+                        <option value="evening">Evening</option>
+                        <option value="night">Night</option>
+                        <option value="24hours">24 Hours</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="salary-range-filter" class="block text-sm font-medium text-gray-700">Salary Range</label>
+                    <select id="salary-range-filter" name="salary_range"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">All</option>
+                        <option value="6000-10000">6,000 - 10,000</option>
+                        <option value="10000-15000">10,000 - 15,000</option>
+                        <option value="15000-20000">15,000 - 20,000</option>
+                        <option value="20000-25000">20,000 - 25,000</option>
+                        <option value="25000-30000">25,000 - 30,000</option>
+                        <option value="30000+">30,000+</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="experience-filter" class="block text-sm font-medium text-gray-700">Minimum Experience (Years)</label>
+                    <input type="number" id="experience-filter" name="experience_min" min="0" placeholder="e.g. 2"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <div>
+                    <label for="services-filter" class="block text-sm font-medium text-gray-700">Services</label>
+                    <select id="services-filter" name="services" multiple
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="cooking">Cooking</option>
+                        <option value="cleaning">Cleaning</option>
+                        <option value="babysitting">Babysitting</option>
+                        <option value="elder_care">Elder Care</option>
+                        <option value="pet_care">Pet Care</option>
+                        <option value="laundry">Laundry</option>
+                        <option value="office_help">Office Help</option>
+                        <option value="gardening">Gardening</option>
+                        <option value="shopping">Shopping</option>
+                        <option value="ironing">Ironing</option>
+                        <option value="postnatal_massage">Postnatal Oil Massage</option>
+                        <option value="sick_care">Sick Care</option>
+                    </select>
+                </div>
+                
+                <div class="flex items-end">
+                    <button type="submit" id="apply-filters"
+                        class="w-full bg-indigo-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Apply Filters
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Profiles Section -->
+        <div id="profiles-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Profiles will be loaded here -->
+            <div class="text-center py-12 text-gray-500">
+                Loading profiles...
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load profiles on page load
+            loadProfiles();
+            
+            // Handle filter form submission
+            document.getElementById('filter-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                loadProfiles();
+            });
+        });
+        
+        async function loadProfiles() {
+            try {
+                // Show loading state
+                const profilesContainer = document.getElementById('profiles-container');
+                profilesContainer.innerHTML = '<div class="text-center py-12 text-gray-500">Loading profiles...</div>';
+                
+                // Get filter values
+                const filters = {
+                    city: document.getElementById('city-filter').value,
+                    working_time: document.getElementById('working-time-filter').value,
+                    salary_range: document.getElementById('salary-range-filter').value,
+                    experience_min: document.getElementById('experience-filter').value ? parseInt(document.getElementById('experience-filter').value) : null,
+                    services: Array.from(document.getElementById('services-filter').selectedOptions).map(option => option.value)
+                };
+                
+                // Fetch profiles with filters
+                const profiles = await window.maidProfiles.fetchMaidProfiles(filters);
+                
+                // Display profiles
+                displayProfiles(profiles);
+            } catch (error) {
+                console.error('Error loading profiles:', error);
+                const profilesContainer = document.getElementById('profiles-container');
+                profilesContainer.innerHTML = '<div class="text-center py-12 text-red-500">Error loading profiles. Please try again.</div>';
+            }
+        }
+        
+        function displayProfiles(profiles) {
+            const profilesContainer = document.getElementById('profiles-container');
+            
+            if (profiles.length === 0) {
+                profilesContainer.innerHTML = '<div class="text-center py-12 text-gray-500">No profiles found matching your criteria.</div>';
+                return;
+            }
+            
+            let profilesHTML = '';
+            
+            profiles.forEach(profile => {
+                // Format services as badges
+                const servicesHTML = profile.services.map(service => {
+                    const serviceName = service.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-1 mb-1">${serviceName}</span>`;
+                }).join('');
+                
+                // Format languages
+                const languagesHTML = profile.languages.join(', ');
+                
+                // Format working time
+                const workingTimeMap = {
+                    'morning': 'Morning',
+                    'day': 'Day',
+                    'evening': 'Evening',
+                    'night': 'Night',
+                    '24hours': '24 Hours'
+                };
+                const workingTime = workingTimeMap[profile.working_time] || profile.working_time;
+                
+                // Format salary range
+                const salaryRangeMap = {
+                    '6000-10000': '6,000 - 10,000 NPR',
+                    '10000-15000': '10,000 - 15,000 NPR',
+                    '15000-20000': '15,000 - 20,000 NPR',
+                    '20000-25000': '20,000 - 25,000 NPR',
+                    '25000-30000': '25,000 - 30,000 NPR',
+                    '30000+': '30,000+ NPR'
+                };
+                const salaryRange = salaryRangeMap[profile.salary_range] || profile.salary_range;
+                
+                // Create profile card
+                profilesHTML += `
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="p-5">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    ${profile.image_url 
+                                        ? `<img class="h-12 w-12 rounded-full" src="${profile.image_url}" alt="${profile.full_name}">` 
+                                        : `<div class="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center">
+                                            <span class="text-gray-500 text-lg font-medium">${profile.full_name.charAt(0)}</span>
+                                           </div>`
+                                    }
+                                </div>
+                                <div class="ml-5">
+                                    <h3 class="text-lg leading-6 font-medium text-gray-900">${profile.full_name}</h3>
+                                    <p class="text-sm text-gray-500">${profile.age} years • ${profile.experience_years} years experience</p>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <p class="text-sm text-gray-500"><span class="font-medium">Location:</span> ${profile.area}, ${profile.city}</p>
+                                <p class="text-sm text-gray-500"><span class="font-medium">Working Time:</span> ${workingTime}</p>
+                                <p class="text-sm text-gray-500"><span class="font-medium">Salary Range:</span> ${salaryRange}</p>
+                                <p class="text-sm text-gray-500"><span class="font-medium">Languages:</span> ${languagesHTML}</p>
+                            </div>
+                            <div class="mt-4">
+                                <h4 class="text-sm font-medium text-gray-900">Services Offered:</h4>
+                                <div class="mt-2">
+                                    ${servicesHTML}
+                                </div>
+                            </div>
+                            ${profile.additional_info ? `
+                                <div class="mt-4">
+                                    <h4 class="text-sm font-medium text-gray-900">Additional Information:</h4>
+                                    <p class="mt-1 text-sm text-gray-500">${profile.additional_info}</p>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="bg-gray-50 px-5 py-3">
+                            <div class="text-sm">
+                                <a href="view-profile.html?id=${profile.id}" class="font-medium text-indigo-600 hover:text-indigo-500">
+                                    View Profile
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            profilesContainer.innerHTML = profilesHTML;
+        }
+    </script>
+</body>
+</html> 

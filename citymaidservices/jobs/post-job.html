@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post a Job - CityMaid</title>
+    <!-- Use Tailwind and Supabase CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            primary: '#4F46E5',
+                            secondary: '#4338CA',
+                            light: '#EEF2FF',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-brand-light font-poppins">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
+                <div class="flex items-center">
+                    <a href="../index.html" class="text-3xl font-bold text-brand-primary tracking-tight">City<span class="text-brand-secondary">Maid</span></a>
+                </div>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="../index.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Home</a>
+                    <a href="find-maids.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Find Maids</a>
+                    <a href="find-jobs.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Find Jobs</a>
+                    <a href="../profile/create-profile.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Create Profile</a>
+                    <a href="post-job.html" class="text-brand-primary font-semibold">Post a Job</a>
+                    <a href="../static/contact.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Contact Us</a>
+                    <a href="../static/about.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">About Us</a>
+                    <a href="../auth/signin.html" class="bg-brand-primary text-white px-6 py-3 rounded-lg hover:bg-brand-secondary font-semibold transition-colors">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Post Job Form Section -->
+    <section class="py-12" id="postJobSection">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-bold text-gray-900 mb-4">Post a Job</h1>
+                <p class="text-lg text-gray-600">Fill in the details below to post your job requirement</p>
+            </div>
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <form id="postJobForm" class="space-y-6">
+                        <!-- Job Title -->
+                        <div>
+                            <label for="jobTitle" class="block text-sm font-medium text-gray-700 mb-2">Your Name (as Job Owner)</label>
+                            <input type="text" id="jobTitle" name="jobTitle" required
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
+                                placeholder="e.g. John Doe">
+                        </div>
+
+                        <!-- Location and Job Type -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="location" class="block text-sm font-medium text-gray-700 mb-2">Offered Location</label>
+                                <input type="text" id="location" name="location" required
+                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
+                                    placeholder="e.g. Sanepa, Nakhu, Pulchowk">
+                            </div>
+                            <div>
+                                <label for="jobType" class="block text-sm font-medium text-gray-700 mb-2">Job Type</label>
+                                <select id="jobType" name="jobType" required
+                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary">
+                                    <option value="">Select Type</option>
+                                    <option value="full-time">Full Time</option>
+                                    <option value="part-time">Part Time</option>
+                                    <option value="live-in">Live In</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Experience Required -->
+                        <div>
+                            <label for="experience" class="block text-sm font-medium text-gray-700 mb-2">Required Experience</label>
+                            <select id="experience" name="experience" required
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary">
+                                <option value="">Select Experience</option>
+                                <option value="0-1">0-1 years</option>
+                                <option value="1-3">1-3 years</option>
+                                <option value="3-5">3-5 years</option>
+                                <option value="5+">5+ years</option>
+                            </select>
+                        </div>
+
+                        <!-- Working Time -->
+                        <div>
+                            <label for="workingTime" class="block text-sm font-medium text-gray-700 mb-2">Offered Working Time</label>
+                            <input type="text" id="workingTime" name="workingTime" required
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
+                                placeholder="e.g. 9am to 5pm">
+                        </div>
+
+                        <!-- Salary -->
+                        <div>
+                            <label for="salary" class="block text-sm font-medium text-gray-700 mb-2">Offered Monthly Salary (NPR)</label>
+                            <input type="number" id="salary" name="salary" required
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
+                                placeholder="Enter monthly salary">
+                        </div>
+
+                        <!-- Required Services -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-4">Required Services</label>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <label class="flex items-center space-x-3">
+                                    <input type="checkbox" name="services" value="cooking"
+                                        class="h-5 w-5 text-brand-primary focus:ring-brand-primary border-gray-300 rounded">
+                                    <span class="text-gray-700"><i class="fas fa-utensils text-brand-primary mr-2"></i>Cooking</span>
+                                </label>
+                                <label class="flex items-center space-x-3">
+                                    <input type="checkbox" name="services" value="cleaning"
+                                        class="h-5 w-5 text-brand-primary focus:ring-brand-primary border-gray-300 rounded">
+                                    <span class="text-gray-700"><i class="fas fa-broom text-brand-primary mr-2"></i>Cleaning</span>
+                                </label>
+                                <label class="flex items-center space-x-3">
+                                    <input type="checkbox" name="services" value="laundry"
+                                        class="h-5 w-5 text-brand-primary focus:ring-brand-primary border-gray-300 rounded">
+                                    <span class="text-gray-700"><i class="fas fa-tshirt text-brand-primary mr-2"></i>Laundry</span>
+                                </label>
+                                <label class="flex items-center space-x-3">
+                                    <input type="checkbox" name="services" value="childcare"
+                                        class="h-5 w-5 text-brand-primary focus:ring-brand-primary border-gray-300 rounded">
+                                    <span class="text-gray-700"><i class="fas fa-baby text-brand-primary mr-2"></i>Childcare</span>
+                                </label>
+                                <label class="flex items-center space-x-3">
+                                    <input type="checkbox" name="services" value="elderly"
+                                        class="h-5 w-5 text-brand-primary focus:ring-brand-primary border-gray-300 rounded">
+                                    <span class="text-gray-700"><i class="fas fa-user-nurse text-brand-primary mr-2"></i>Elderly Care</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div>
+                            <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                            <div class="relative">
+                                <textarea id="description" name="description" rows="4" maxlength="200" required
+                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
+                                    placeholder="Describe the job requirements and responsibilities"></textarea>
+                                <div class="absolute bottom-2 right-2 text-sm text-gray-500">
+                                    <span id="descriptionCharCount">0</span>/200
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Contact Phone</label>
+                                <input type="tel" id="phone" name="phone" required
+                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
+                                    placeholder="e.g. +977-98XXXXXXXX">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Contact Email</label>
+                                <input type="email" id="email" name="email" required
+                                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
+                                    placeholder="e.g. your@email.com">
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="flex gap-4">
+                            <button type="submit" class="flex-1 bg-brand-primary text-white py-4 px-6 rounded-lg font-semibold hover:bg-brand-secondary transition-colors">
+                                Post Job
+                            </button>
+                            <button type="reset" class="flex-1 bg-gray-100 text-gray-700 py-4 px-6 rounded-lg font-semibold hover:bg-gray-200 transition-colors border border-gray-300">
+                                Reset Form
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <div>
+                    <h3 class="text-2xl font-bold mb-6">City Maid Services</h3>
+                    <p class="text-gray-400 leading-relaxed">Connecting trusted domestic help with employers in Nepal</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-6">Quick Links</h3>
+                    <ul class="space-y-4">
+                        <li><a href="find-maids.html" class="text-gray-400 hover:text-white transition-colors">Find Maids</a></li>
+                        <li><a href="find-jobs.html" class="text-gray-400 hover:text-white transition-colors">Find Jobs</a></li>
+                        <li><a href="../profile/create-profile.html" class="text-gray-400 hover:text-white transition-colors">Create Profile</a></li>
+                        <li><a href="post-job.html" class="text-gray-400 hover:text-white transition-colors">Post a Job</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-6">Legal</h3>
+                    <ul class="space-y-4">
+                        <li><a href="../static/privacy-policy.html" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="../static/terms-of-service.html" class="text-gray-400 hover:text-white transition-colors">Terms of Service</a></li>
+                        <li><a href="../static/refund-policy.html" class="text-gray-400 hover:text-white transition-colors">Refund Policy</a></li>
+                        <li><a href="../static/cookie-policy.html" class="text-gray-400 hover:text-white transition-colors">Cookie Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-6">Contact Info</h3>
+                    <p class="text-gray-400 mb-2">Address: Talchhikhel 15, Satdobato, Lalitpur, Nepal</p>
+                    <p class="text-gray-400 mb-4">Email: info@citymaidservices.net</p>
+                    <p class="text-gray-400">Phone: +977-9841317273</p>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <p class="text-center text-gray-400">&copy; <span id="currentYear"></span> City Maid Services. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        
+        // Initialize Supabase
+        const supabaseUrl = 'https://fdgqqxyyofjnkhswkwcq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkZ3FxeHl5b2Zqbmtoc3drd2NxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwMjQyMTMsImV4cCI6MjA1OTYwMDIxM30.YyJLLu3r2a7Mh7ny0ie-YzzLfPh5PdrJJHnBFBxWqVE';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('postJobForm');
+            
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Get form elements
+                const jobTitleInput = document.getElementById('jobTitle');
+                const locationInput = document.getElementById('location');
+                const jobTypeInput = document.getElementById('jobType');
+                const experienceInput = document.getElementById('experience');
+                const workingTimeInput = document.getElementById('workingTime');
+                const salaryInput = document.getElementById('salary');
+                const descriptionInput = document.getElementById('description');
+                const phoneInput = document.getElementById('phone');
+                const emailInput = document.getElementById('email');
+                const servicesCheckboxes = document.querySelectorAll('input[name="services"]');
+                
+                // Get selected services
+                const selectedServices = [];
+                servicesCheckboxes.forEach(checkbox => {
+                    if (checkbox.checked) selectedServices.push(checkbox.value);
+                });
+                
+                try {
+                    // Prepare job data
+                    const jobData = {
+                        owner_name: jobTitleInput.value.trim(),
+                        location: locationInput.value.trim(),
+                        type: jobTypeInput.value,
+                        required_experience: experienceInput.value,
+                        working_hours: workingTimeInput.value.trim(),
+                        salary: parseInt(salaryInput.value),
+                        services: selectedServices,
+                        description: descriptionInput.value.trim(),
+                        contact_phone: phoneInput.value.trim(),
+                        contact_email: emailInput.value.trim(),
+                        is_active: true,
+                        created_at: new Date().toISOString()
+                    };
+                    
+                    // Submit to Supabase
+                    const { data, error } = await supabase
+                        .from('jobs')
+                        .insert([jobData]);
+                    
+                    if (error) throw error;
+                    
+                    // Reset form
+                    form.reset();
+                    
+                    // Create success message modal
+                    const successModal = document.createElement('div');
+                    successModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                    successModal.innerHTML = `
+                        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 text-center">
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-check text-3xl text-green-500"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Job Posted Successfully!</h3>
+                            <p class="text-gray-600 mb-6">Your job listing has been published and is now visible to potential candidates.</p>
+                            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                                <a href="../index.html" class="bg-brand-primary text-white px-6 py-3 rounded-lg hover:bg-brand-secondary transition-colors">
+                                    <i class="fas fa-home mr-2"></i>Go to Homepage
+                                </a>
+                                <a href="find-jobs.html" class="bg-white text-brand-primary px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors border-2 border-brand-primary">
+                                    <i class="fas fa-search mr-2"></i>View All Jobs
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(successModal);
+                    
+                    // Remove the automatic timeout - modal will stay until user clicks a link
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    
+                    // Create error message modal
+                    const errorModal = document.createElement('div');
+                    errorModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                    errorModal.innerHTML = `
+                        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 text-center">
+                            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-exclamation-circle text-3xl text-red-500"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Error Posting Job</h3>
+                            <p class="text-gray-600 mb-6">${error.message}</p>
+                            <button onclick="this.closest('.fixed').remove()" class="bg-brand-primary text-white px-6 py-3 rounded-lg hover:bg-brand-secondary transition-colors">
+                                <i class="fas fa-times mr-2"></i>Close
+                            </button>
+                        </div>
+                    `;
+                    document.body.appendChild(errorModal);
+                }
+            });
+        });
+
+        // Initialize character count for description
+        const descriptionInput = document.getElementById('description');
+        const descriptionCharCount = document.getElementById('descriptionCharCount');
+        
+        function updateDescriptionCharCount() {
+            const count = descriptionInput.value.length;
+            descriptionCharCount.textContent = count;
+            
+            // Change color based on character count
+            if (count > 180) {
+                descriptionCharCount.classList.add('text-red-500');
+                descriptionCharCount.classList.remove('text-gray-500');
+            } else {
+                descriptionCharCount.classList.remove('text-red-500');
+                descriptionCharCount.classList.add('text-gray-500');
+            }
+        }
+        
+        descriptionInput.addEventListener('input', updateDescriptionCharCount);
+        updateDescriptionCharCount(); // Initialize count on page load
+    </script>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Maid Profile - City Maid Services</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="../js/maid-profiles.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <h1 class="text-3xl font-bold text-gray-900">Maid Profile</h1>
+                <a href="list-profiles.html" class="text-indigo-600 hover:text-indigo-500">
+                    Back to Profiles
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div id="profile-container" class="bg-white shadow overflow-hidden sm:rounded-lg">
+            <!-- Profile content will be loaded here -->
+            <div class="text-center py-12 text-gray-500">
+                Loading profile...
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Get profile ID from URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const profileId = urlParams.get('id');
+                
+                if (!profileId) {
+                    throw new Error('Profile ID not provided');
+                }
+                
+                // Fetch profile data
+                const profile = await window.maidProfiles.fetchMaidProfileById(profileId);
+                
+                if (!profile) {
+                    throw new Error('Profile not found');
+                }
+                
+                // Display profile
+                displayProfile(profile);
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                const profileContainer = document.getElementById('profile-container');
+                profileContainer.innerHTML = `
+                    <div class="text-center py-12 text-red-500">
+                        ${error.message || 'Error loading profile. Please try again.'}
+                    </div>
+                `;
+            }
+        });
+        
+        function displayProfile(profile) {
+            // Format services as badges
+            const servicesHTML = profile.services.map(service => {
+                const serviceName = service.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-1 mb-1">${serviceName}</span>`;
+            }).join('');
+            
+            // Format languages
+            const languagesHTML = profile.languages.join(', ');
+            
+            // Format working time
+            const workingTimeMap = {
+                'morning': 'Morning',
+                'day': 'Day',
+                'evening': 'Evening',
+                'night': 'Night',
+                '24hours': '24 Hours'
+            };
+            const workingTime = workingTimeMap[profile.working_time] || profile.working_time;
+            
+            // Format salary range
+            const salaryRangeMap = {
+                '6000-10000': '6,000 - 10,000 NPR',
+                '10000-15000': '10,000 - 15,000 NPR',
+                '15000-20000': '15,000 - 20,000 NPR',
+                '20000-25000': '20,000 - 25,000 NPR',
+                '25000-30000': '25,000 - 30,000 NPR',
+                '30000+': '30,000+ NPR'
+            };
+            const salaryRange = salaryRangeMap[profile.salary_range] || profile.salary_range;
+            
+            // Create profile HTML
+            const profileHTML = `
+                <div class="px-4 py-5 sm:px-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            ${profile.image_url 
+                                ? `<img class="h-24 w-24 rounded-full" src="${profile.image_url}" alt="${profile.full_name}">` 
+                                : `<div class="h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center">
+                                    <span class="text-gray-500 text-3xl font-medium">${profile.full_name.charAt(0)}</span>
+                                   </div>`
+                            }
+                        </div>
+                        <div class="ml-5">
+                            <h3 class="text-2xl leading-6 font-medium text-gray-900">${profile.full_name}</h3>
+                            <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                                ${profile.age} years • ${profile.experience_years} years experience
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="border-t border-gray-200">
+                    <dl>
+                        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">Full name</dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">${profile.full_name}</dd>
+                        </div>
+                        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">Age</dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">${profile.age} years</dd>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">Gender</dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">${profile.gender}</dd>
+                        </div>
+                        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">Religion</dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">${profile.religion}</dd>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">Languages</dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">${languagesHTML}</dd>
+                        </div>
+                        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">Contact Information</dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                <p>Email: ${profile.email}</p>
+                                <p>Phone: ${profile.phone}</p>
+                            </dd>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">Location</dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                <p>${profile.area}, ${profile.city}</p>
+                            </dd>
+                        </div>
+                        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">Working Time</dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">${workingTime}</dd>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">Salary Range</dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">${salaryRange}</dd>
+                        </div>
+                        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">Experience</dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">${profile.experience_years} years</dd>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt class="text-sm font-medium text-gray-500">Services Offered</dt>
+                            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                <div class="flex flex-wrap">
+                                    ${servicesHTML}
+                                </div>
+                            </dd>
+                        </div>
+                        ${profile.additional_info ? `
+                            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                <dt class="text-sm font-medium text-gray-500">Additional Information</dt>
+                                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">${profile.additional_info}</dd>
+                            </div>
+                        ` : ''}
+                    </dl>
+                </div>
+                <div class="bg-gray-50 px-4 py-5 sm:px-6">
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="window.location.href='list-profiles.html'"
+                            class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Back to Profiles
+                        </button>
+                        <button type="button" onclick="contactMaid('${profile.id}')"
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Contact Maid
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('profile-container').innerHTML = profileHTML;
+        }
+        
+        function contactMaid(profileId) {
+            // Check if user is logged in
+            const user = window.supabase.auth.user();
+            
+            if (!user) {
+                // Redirect to login page if not logged in
+                window.location.href = '../auth/login.html?redirect=maid/view-profile.html?id=' + profileId;
+                return;
+            }
+            
+            // TODO: Implement contact functionality
+            // This will be implemented when we add the payment system
+            alert('Contact functionality will be implemented with the payment system.');
+        }
+    </script>
+</body>
+</html> 

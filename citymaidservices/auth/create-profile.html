@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Profile - City Maid Services</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center py-8">
+    <div class="max-w-md w-full mx-4">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <h2 class="text-2xl font-bold text-center mb-8">Create Your Profile</h2>
+            
+            <div id="error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <span class="block sm:inline" id="error-text"></span>
+            </div>
+
+            <!-- Employer Profile Form -->
+            <form id="employer-profile-form" class="space-y-6 hidden">
+                <div>
+                    <label for="employer-full-name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input type="text" id="employer-full-name" name="full_name" required
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+
+                <div>
+                    <label for="employer-email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="employer-email" name="email" required
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+
+                <div>
+                    <label for="employer-phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                    <input type="tel" id="employer-phone" name="phone" required
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+
+                <div>
+                    <button type="submit" id="employer-submit-button"
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Create Employer Profile
+                    </button>
+                </div>
+            </form>
+
+            <!-- Maid Profile Form -->
+            <form id="maid-profile-form" class="space-y-6 hidden">
+                <!-- Personal Information Section -->
+                <div class="border-b border-gray-200 pb-4">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Personal Information</h3>
+                    
+                    <div class="mb-4">
+                        <label for="maid-image" class="block text-sm font-medium text-gray-700 mb-2">Profile Photo</label>
+                        <div class="flex items-center justify-center w-full">
+                            <label for="maid-image" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <svg class="w-8 h-8 mb-2 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                    </svg>
+                                    <p class="mb-1 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                                    <p class="text-xs text-gray-500">PNG, JPG or JPEG (MAX. 2MB)</p>
+                                </div>
+                                <input id="maid-image" type="file" class="hidden" accept="image/*" />
+                            </label>
+                        </div>
+                        <div id="image-preview" class="hidden mt-2">
+                            <img id="preview" src="#" alt="Preview" class="h-24 w-24 object-cover rounded-full mx-auto" />
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="maid-full-name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                            <input type="text" id="maid-full-name" name="full_name" required
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label for="maid-age" class="block text-sm font-medium text-gray-700">Age</label>
+                            <input type="number" id="maid-age" name="age" min="18" max="100" required
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label for="maid-gender" class="block text-sm font-medium text-gray-700">Gender</label>
+                            <select id="maid-gender" name="gender" required
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">Select gender</option>
+                                <option value="female">Female</option>
+                                <option value="male">Male</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="maid-religion" class="block text-sm font-medium text-gray-700">Religion</label>
+                            <select id="maid-religion" name="religion" required
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">Select religion</option>
+                                <option value="hinduism">Hinduism</option>
+                                <option value="buddhism">Buddhism</option>
+                                <option value="christianity">Christianity</option>
+                                <option value="islam">Islam</option>
+                                <option value="sikhism">Sikhism</option>
+                                <option value="jainism">Jainism</option>
+                                <option value="kirat">Kirat</option>
+                                <option value="bon">Bon</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label for="maid-languages" class="block text-sm font-medium text-gray-700">Languages Spoken</label>
+                        <input type="text" id="maid-languages" name="languages" required
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="e.g. Nepali, English, Hindi">
+                    </div>
+
+                    <div class="mt-4">
+                        <label for="maid-email" class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" id="maid-email" name="email" required
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+
+                    <div class="mt-4">
+                        <label for="maid-phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                        <input type="tel" id="maid-phone" name="phone" required
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </div>
+
+                <!-- Work Preferences Section -->
+                <div class="border-b border-gray-200 pb-4">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Work Preferences</h3>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="maid-city" class="block text-sm font-medium text-gray-700">City</label>
+                            <input type="text" id="maid-city" name="city" placeholder="e.g. Kathmandu" required
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label for="maid-area" class="block text-sm font-medium text-gray-700">Area</label>
+                            <input type="text" id="maid-area" name="area" placeholder="e.g. Koteshwor" required
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label for="maid-working-time" class="block text-sm font-medium text-gray-700">Preferred Working Time</label>
+                        <select id="maid-working-time" name="working_time" required
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="">Select working time</option>
+                            <option value="morning">Morning</option>
+                            <option value="day">Day</option>
+                            <option value="evening">Evening</option>
+                            <option value="night">Night</option>
+                            <option value="24hours">24 Hours</option>
+                        </select>
+                    </div>
+
+                    <div class="mt-4">
+                        <label for="maid-salary-range" class="block text-sm font-medium text-gray-700">Salary Range (NPR)</label>
+                        <select id="maid-salary-range" name="salary_range" required
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="">Select salary range</option>
+                            <option value="6000-10000">6,000 - 10,000</option>
+                            <option value="10000-15000">10,000 - 15,000</option>
+                            <option value="15000-20000">15,000 - 20,000</option>
+                            <option value="20000-25000">20,000 - 25,000</option>
+                            <option value="25000-30000">25,000 - 30,000</option>
+                            <option value="30000+">30,000+</option>
+                        </select>
+                    </div>
+
+                    <div class="mt-4">
+                        <label for="maid-experience" class="block text-sm font-medium text-gray-700">Years of Experience</label>
+                        <input type="number" id="maid-experience" name="experience_years" min="0" required
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </div>
+
+                <!-- Services Section -->
+                <div class="border-b border-gray-200 pb-4">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Services Offered</h3>
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="flex items-center">
+                            <input id="service-cooking" name="services" type="checkbox" value="cooking" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <label for="service-cooking" class="ml-2 block text-sm text-gray-700">Cooking</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input id="service-cleaning" name="services" type="checkbox" value="cleaning" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <label for="service-cleaning" class="ml-2 block text-sm text-gray-700">Cleaning</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input id="service-babysitting" name="services" type="checkbox" value="babysitting" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <label for="service-babysitting" class="ml-2 block text-sm text-gray-700">Babysitting</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input id="service-elder-care" name="services" type="checkbox" value="elder_care" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <label for="service-elder-care" class="ml-2 block text-sm text-gray-700">Elder Care</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input id="service-pet-care" name="services" type="checkbox" value="pet_care" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <label for="service-pet-care" class="ml-2 block text-sm text-gray-700">Pet Care</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input id="service-laundry" name="services" type="checkbox" value="laundry" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <label for="service-laundry" class="ml-2 block text-sm text-gray-700">Laundry</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input id="service-office-help" name="services" type="checkbox" value="office_help" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <label for="service-office-help" class="ml-2 block text-sm text-gray-700">Office Help</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input id="service-gardening" name="services" type="checkbox" value="gardening" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <label for="service-gardening" class="ml-2 block text-sm text-gray-700">Gardening</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input id="service-shopping" name="services" type="checkbox" value="shopping" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <label for="service-shopping" class="ml-2 block text-sm text-gray-700">Shopping</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input id="service-ironing" name="services" type="checkbox" value="ironing" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <label for="service-ironing" class="ml-2 block text-sm text-gray-700">Ironing</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input id="service-postnatal-massage" name="services" type="checkbox" value="postnatal_massage" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <label for="service-postnatal-massage" class="ml-2 block text-sm text-gray-700">Postnatal Oil Massage</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input id="service-sick-care" name="services" type="checkbox" value="sick_care" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <label for="service-sick-care" class="ml-2 block text-sm text-gray-700">Sick Care</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Information Section -->
+                <div class="border-b border-gray-200 pb-4">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Additional Information</h3>
+                    
+                    <div class="mt-4">
+                        <label for="maid-additional-info" class="block text-sm font-medium text-gray-700">Additional Information (Optional)</label>
+                        <textarea id="maid-additional-info" name="additional_info" rows="4" maxlength="200"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="Add any additional information you'd like to share with potential employers..."></textarea>
+                        <div class="flex justify-end mt-1">
+                            <span id="char-count" class="text-xs text-gray-500">0/200 characters</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" id="maid-submit-button"
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        Create Maid Profile
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://fdgqqxyyofjnkhswkwcq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkZ3FxeHl5b2Zqbmtoc3drd2NxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwMjQyMTMsImV4cCI6MjA1OTYwMDIxM30.YyJLLu3r2a7Mh7ny0ie-YzzLfPh5PdrJJHnBFBxWqVE';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Get elements
+        const employerProfileForm = document.getElementById('employer-profile-form');
+        const maidProfileForm = document.getElementById('maid-profile-form');
+        const employerSubmitButton = document.getElementById('employer-submit-button');
+        const maidSubmitButton = document.getElementById('maid-submit-button');
+        const errorMessage = document.getElementById('error-message');
+        const errorText = document.getElementById('error-text');
+        const imageInput = document.getElementById('maid-image');
+        const imagePreview = document.getElementById('image-preview');
+        const previewImage = document.getElementById('preview');
+        const additionalInfo = document.getElementById('maid-additional-info');
+        const charCount = document.getElementById('char-count');
+
+        // Function to show error message
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+
+        // Handle character count for additional info
+        additionalInfo.addEventListener('input', function() {
+            const count = this.value.length;
+            charCount.textContent = `${count}/200 characters`;
+        });
+
+        // Handle image upload preview
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    imagePreview.classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Check if user is logged in and has selected a role
+        async function checkSession() {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            if (error || !session) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const selectedRole = sessionStorage.getItem('selectedRole');
+            if (!selectedRole) {
+                window.location.href = 'select-role.html';
+                return;
+            }
+
+            // Show the appropriate form based on role
+            if (selectedRole === 'employer') {
+                employerProfileForm.classList.remove('hidden');
+                maidProfileForm.classList.add('hidden');
+            } else if (selectedRole === 'maid') {
+                employerProfileForm.classList.add('hidden');
+                maidProfileForm.classList.remove('hidden');
+            }
+
+            return { session, selectedRole };
+        }
+
+        // Handle employer profile form submission
+        employerProfileForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            try {
+                // Get session and role
+                const { session, selectedRole } = await checkSession();
+                if (!session || !selectedRole) return;
+
+                // Get form values
+                const fullName = document.getElementById('employer-full-name').value.trim();
+                const email = document.getElementById('employer-email').value.trim();
+                const phone = document.getElementById('employer-phone').value.trim();
+
+                // Validate required fields
+                if (!fullName || !email || !phone) {
+                    showError('Please fill in all required fields');
+                    return;
+                }
+
+                // Disable submit button
+                employerSubmitButton.disabled = true;
+                employerSubmitButton.textContent = 'Creating Profile...';
+
+                // Create employer profile
+                const { error } = await supabase
+                    .from('employer_profiles')
+                    .insert([
+                        {
+                            user_id: session.user.id,
+                            full_name: fullName,
+                            email: email,
+                            phone: phone
+                        }
+                    ]);
+
+                if (error) throw error;
+
+                // Clear role from session storage
+                sessionStorage.removeItem('selectedRole');
+
+                // Redirect to employer dashboard
+                window.location.href = '../employer/dashboard.html';
+            } catch (error) {
+                console.error('Error creating employer profile:', error);
+                showError(error.message);
+                
+                // Reset submit button
+                employerSubmitButton.disabled = false;
+                employerSubmitButton.textContent = 'Create Employer Profile';
+            }
+        });
+
+        // Handle maid profile form submission
+        maidProfileForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            try {
+                // Get session and role
+                const { session, selectedRole } = await checkSession();
+                if (!session || !selectedRole) return;
+
+                // Get form values
+                const fullName = document.getElementById('maid-full-name').value.trim();
+                const email = document.getElementById('maid-email').value.trim();
+                const phone = document.getElementById('maid-phone').value.trim();
+                const age = document.getElementById('maid-age').value.trim();
+                const gender = document.getElementById('maid-gender').value;
+                const religion = document.getElementById('maid-religion').value;
+                const languages = document.getElementById('maid-languages').value.trim();
+                const city = document.getElementById('maid-city').value.trim();
+                const area = document.getElementById('maid-area').value.trim();
+                const workingTime = document.getElementById('maid-working-time').value;
+                const salaryRange = document.getElementById('maid-salary-range').value;
+                const experienceYears = document.getElementById('maid-experience').value.trim();
+                const additionalInfo = document.getElementById('maid-additional-info').value.trim();
+
+                // Get selected services
+                const serviceCheckboxes = document.querySelectorAll('input[name="services"]:checked');
+                const services = Array.from(serviceCheckboxes).map(checkbox => checkbox.value);
+
+                // Validate required fields
+                if (!fullName || !email || !phone || !age || !gender || !religion || !languages ||
+                    !city || !area || !workingTime || !salaryRange || !experienceYears || services.length === 0) {
+                    showError('Please fill in all required fields and select at least one service');
+                    return;
+                }
+
+                // Disable submit button
+                maidSubmitButton.disabled = true;
+                maidSubmitButton.textContent = 'Creating Profile...';
+
+                // Handle image upload if provided
+                let imageUrl = null;
+                const imageFile = imageInput.files[0];
+                if (imageFile) {
+                    try {
+                        // Validate file size (2MB limit)
+                        if (imageFile.size > 2 * 1024 * 1024) {
+                            throw new Error('Image size must be less than 2MB');
+                        }
+
+                        // Validate file type
+                        const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+                        if (!validTypes.includes(imageFile.type)) {
+                            throw new Error('Only JPG, JPEG, and PNG images are allowed');
+                        }
+
+                        const fileExt = imageFile.name.split('.').pop();
+                        const fileName = `${session.user.id}/${Date.now()}.${fileExt}`;
+                        
+                        // Upload to the new bucket
+                        const { data: uploadData, error: uploadError } = await supabase.storage
+                            .from('maid_profile_images')
+                            .upload(fileName, imageFile, {
+                                cacheControl: '3600',
+                                upsert: false
+                            });
+                        
+                        if (uploadError) throw uploadError;
+                        
+                        // Get public URL
+                        const { data: { publicUrl } } = supabase.storage
+                            .from('maid_profile_images')
+                            .getPublicUrl(fileName);
+                        
+                        imageUrl = publicUrl;
+                    } catch (error) {
+                        console.error('Error uploading image:', error);
+                        showError(error.message);
+                        return;
+                    }
+                }
+
+                // Create maid profile
+                const { error } = await supabase
+                    .from('maid_profiles')
+                    .insert([
+                        {
+                            user_id: session.user.id,
+                            full_name: fullName,
+                            email: email,
+                            phone: phone,
+                            age: parseInt(age),
+                            gender: gender,
+                            religion: religion,
+                            languages: languages.split(',').map(lang => lang.trim()),
+                            address: area, // Using area as address for now
+                            city: city,
+                            area: area,
+                            working_time: workingTime,
+                            salary_range: salaryRange,
+                            experience_years: parseInt(experienceYears),
+                            services: services,
+                            image_url: imageUrl,
+                            additional_info: additionalInfo || null
+                        }
+                    ]);
+
+                if (error) throw error;
+
+                // Clear role from session storage
+                sessionStorage.removeItem('selectedRole');
+
+                // Redirect to maid dashboard
+                window.location.href = '../maid/dashboard.html';
+            } catch (error) {
+                console.error('Error creating maid profile:', error);
+                showError(error.message);
+                
+                // Reset submit button
+                maidSubmitButton.disabled = false;
+                maidSubmitButton.textContent = 'Create Maid Profile';
+            }
+        });
+
+        // Check session on page load
+        checkSession();
+    </script>
+</body>
+</html> 

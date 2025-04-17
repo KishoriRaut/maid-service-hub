@@ -1,0 +1,315 @@
+<!DOCTYPE html>  
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - City Maid Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            primary: '#4F46E5', 
+                            secondary: '#4338CA',
+                            light: '#EEF2FF',
+                        }
+                    }
+               }
+            }
+        }
+    </script>
+</head>
+<body class="bg-brand-light font-poppins">
+    <!-- Navigation Bar -->
+<nav class="bg-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-20">
+            <div class="flex items-center">
+                <a href="../index.html" class="text-3xl font-bold text-brand-primary tracking-tight">City<span class="text-brand-secondary"> Maid Services</span></a>
+            </div>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="../index.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Home</a>
+                <a href="../jobs/find-maids.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Find Maids</a>
+                <a href="../jobs/find-jobs.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Find Jobs</a>
+                <a href="../profile/create-profile.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Create Profile</a>
+                <a href="../jobs/post-job.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Post a Job</a>
+                <a href="contact.html" class="text-brand-primary font-semibold">Contact Us</a>
+                <a href="about.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">About Us</a>
+                <a href="../auth/signin.html" class="bg-brand-primary text-white px-6 py-3 rounded-lg hover:bg-brand-secondary font-semibold transition-colors">Sign In</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+    <!-- Main Content -->
+    <main class="py-12 md:py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+                <!-- Contact Information -->
+                <div class="bg-white rounded-2xl shadow-xl p-6 md:p-10">
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8">Get in Touch</h2>
+                    
+                    <div class="space-y-6 md:space-y-8">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 bg-brand-light p-3 md:p-4 rounded-lg">
+                                <i class="fas fa-map-marker-alt text-xl md:text-2xl text-brand-primary"></i>
+                            </div>
+                            <div class="ml-4 md:ml-6">
+                                <h3 class="text-lg md:text-xl font-semibold text-gray-900">Address</h3>
+                                <p class="text-gray-600 mt-1 md:mt-2">Talchhikhel 15, Satdobato, Lalitpur, Nepal</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 bg-brand-light p-3 md:p-4 rounded-lg">
+                                <i class="fas fa-phone text-xl md:text-2xl text-brand-primary"></i>
+                            </div>
+                            <div class="ml-4 md:ml-6">
+                                <h3 class="text-lg md:text-xl font-semibold text-gray-900">Phone</h3>
+                                <p class="text-gray-600 mt-1 md:mt-2">+977-9841317273</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 bg-brand-light p-3 md:p-4 rounded-lg">
+                                <i class="fas fa-envelope text-xl md:text-2xl text-brand-primary"></i>
+                            </div>
+                            <div class="ml-4 md:ml-6">
+                                <h3 class="text-lg md:text-xl font-semibold text-gray-900">Email</h3>
+                                <p class="text-gray-600 mt-1 md:mt-2">info@citymaidservices.net</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 bg-brand-light p-3 md:p-4 rounded-lg">
+                                <i class="fas fa-clock text-xl md:text-2xl text-brand-primary"></i>
+                            </div>
+                            <div class="ml-4 md:ml-6">
+                                <h3 class="text-lg md:text-xl font-semibold text-gray-900">Working Hours</h3>
+                                <p class="text-gray-600 mt-1 md:mt-2">Monday - Saturday: 9:00 AM - 6:00 PM</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 md:mt-12">
+                        <h3 class="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6">Follow Us</h3>
+                        <div class="flex space-x-4 md:space-x-5">
+                            <a href="#" class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-brand-light text-brand-primary hover:bg-brand-primary hover:text-white transition-all transform hover:-translate-y-1">
+                                <i class="fab fa-facebook-f text-lg md:text-xl"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-brand-light text-brand-primary hover:bg-brand-primary hover:text-white transition-all transform hover:-translate-y-1">
+                                <i class="fab fa-twitter text-lg md:text-xl"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-brand-light text-brand-primary hover:bg-brand-primary hover:text-white transition-all transform hover:-translate-y-1">
+                                <i class="fab fa-instagram text-lg md:text-xl"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-brand-light text-brand-primary hover:bg-brand-primary hover:text-white transition-all transform hover:-translate-y-1">
+                                <i class="fab fa-linkedin-in text-lg md:text-xl"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="bg-white rounded-2xl shadow-xl p-6 md:p-10">
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8">Send us a Message</h2>
+                    <form id="contactForm" onsubmit="handleContactSubmit(event)" class="space-y-4 md:space-y-6">
+                        <div>
+                            <label for="name" class="block text-sm font-semibold text-gray-700 mb-1 md:mb-2">Full Name</label>
+                            <input type="text" id="name" name="name" required
+                                class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition-colors">
+                        </div>
+
+                        <div>
+                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1 md:mb-2">Email Address</label>
+                            <input type="email" id="email" name="email" required
+                                class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition-colors">
+                        </div>
+
+                        <div>
+                            <label for="subject" class="block text-sm font-semibold text-gray-700 mb-1 md:mb-2">Subject</label>
+                            <input type="text" id="subject" name="subject" required
+                                class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition-colors">
+                        </div>
+
+                        <div>
+                            <label for="message" class="block text-sm font-semibold text-gray-700 mb-1 md:mb-2">Your Message</label>
+                            <textarea id="message" name="message" rows="4" required
+                                class="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition-colors"></textarea>
+                        </div>
+
+                        <button type="submit"
+                            class="w-full bg-brand-primary text-white py-3 md:py-4 px-4 md:px-6 rounded-lg text-base md:text-lg font-semibold hover:bg-brand-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary transition-colors transform hover:-translate-y-0.5">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <div>
+                    <h3 class="text-2xl font-bold mb-6">City Maid Services</h3>
+                    <p class="text-gray-400 leading-relaxed">Connecting trusted domestic help with employers in Nepal</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-6">Quick Links</h3>
+                    <ul class="space-y-4">
+                        <li><a href="../jobs/find-maids.html" class="text-gray-400 hover:text-white transition-colors">Find Maids</a></li>
+                        <li><a href="../jobs/find-jobs.html" class="text-gray-400 hover:text-white transition-colors">Find Jobs</a></li>
+                        <li><a href="../profile/create-profile.html" class="text-gray-400 hover:text-white transition-colors">Create Profile</a></li>
+                        <li><a href="../jobs/post-job.html" class="text-gray-400 hover:text-white transition-colors">Post a Job</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-6">Legal</h3>
+                    <ul class="space-y-4">
+                        <li><a href="privacy-policy.html" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="terms-of-service.html" class="text-gray-400 hover:text-white transition-colors">Terms of Service</a></li>
+                        <li><a href="refund-policy.html" class="text-gray-400 hover:text-white transition-colors">Refund Policy</a></li>
+                        <li><a href="cookie-policy.html" class="text-gray-400 hover:text-white transition-colors">Cookie Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-6">Contact Info</h3>
+                    <p class="text-gray-400 mb-4">Email: info@citymaidservices.net</p>
+                    <p class="text-gray-400">Phone: +977-9841317273</p>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <p class="text-center text-gray-400">&copy; <span id="currentYear"></span> City Maid Services. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+        // Form validation and submission
+        function handleContactSubmit(event) {
+            event.preventDefault();
+            
+            // Get form elements
+            const form = document.getElementById('contactForm');
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const subjectInput = document.getElementById('subject');
+            const messageInput = document.getElementById('message');
+            
+            // Reset previous error messages
+            clearValidationMessages();
+            
+            // Validate form fields
+            let isValid = true;
+            
+            if (!nameInput.value.trim()) {
+                showValidationMessage(nameInput, 'Please enter your name');
+                isValid = false;
+            }
+            
+            if (!emailInput.value.trim()) {
+                showValidationMessage(emailInput, 'Please enter your email');
+                isValid = false;
+            } else if (!isValidEmail(emailInput.value)) {
+                showValidationMessage(emailInput, 'Please enter a valid email address');
+                isValid = false;
+            }
+            
+            if (!subjectInput.value.trim()) {
+                showValidationMessage(subjectInput, 'Please enter a subject');
+                isValid = false;
+            }
+            
+            if (!messageInput.value.trim()) {
+                showValidationMessage(messageInput, 'Please enter your message');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Show loading state
+                const submitButton = form.querySelector('button[type="submit"]');
+                const originalButtonText = submitButton.innerHTML;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Sending...';
+                submitButton.disabled = true;
+                
+                // Simulate form submission (replace with actual API call)
+                setTimeout(() => {
+                    // Reset form
+                    form.reset();
+                    
+                    // Show success message
+                    showNotification('Your message has been sent successfully!', 'success');
+                    
+                    // Reset button
+                    submitButton.innerHTML = originalButtonText;
+                    submitButton.disabled = false;
+                }, 1500);
+            }
+        }
+        
+        function showValidationMessage(input, message) {
+            const formGroup = input.parentElement;
+            const errorMessage = document.createElement('p');
+            errorMessage.className = 'text-red-500 text-sm mt-1';
+            errorMessage.textContent = message;
+            formGroup.appendChild(errorMessage);
+            
+            // Add error styling to input
+            input.classList.add('border-red-500');
+            input.classList.add('focus:ring-red-500');
+            input.classList.add('focus:border-red-500');
+        }
+        
+        function clearValidationMessages() {
+            // Remove all error messages
+            const errorMessages = document.querySelectorAll('.text-red-500');
+            errorMessages.forEach(message => message.remove());
+            
+            // Reset input styling
+            const inputs = document.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                input.classList.remove('border-red-500');
+                input.classList.remove('focus:ring-red-500');
+                input.classList.remove('focus:border-red-500');
+            });
+        }
+        
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+                type === 'success' ? 'bg-green-500' : 'bg-red-500'
+            } text-white flex items-center`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} mr-2"></i>
+                ${message}
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        }
+
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

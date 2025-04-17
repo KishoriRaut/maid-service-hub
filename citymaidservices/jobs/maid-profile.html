@@ -1,0 +1,460 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maid Profile | CityMaid</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            primary: '#4F46E5',
+                            secondary: '#4338CA',
+                            light: '#EEF2FF',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .profile-header {
+            background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
+        }
+        .contact-blur {
+            filter: blur(4px);
+            user-select: none;
+            pointer-events: none;
+        }
+        .service-badge {
+            @apply px-4 py-2 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800;
+        }
+        .feature-card {
+            @apply bg-white rounded-xl p-6 border border-gray-100 hover:border-indigo-100 transition-all duration-300;
+        }
+        .status-badge {
+            @apply px-3 py-1 rounded-full text-sm font-medium;
+        }
+        .status-badge.verified {
+            @apply bg-green-100 text-green-700;
+        }
+        .status-badge.pending {
+            @apply bg-yellow-100 text-yellow-700;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-poppins">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
+                    <a href="find-maids.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Find Maids</a>
+                    <a href="find-jobs.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Find Jobs</a>
+                    <a href="../profile/create-profile.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Create Profile</a>
+                    <a href="../auth/signin.html" class="bg-brand-primary text-white px-6 py-3 rounded-lg hover:bg-brand-secondary font-semibold transition-colors">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Profile Header -->
+        <div class="profile-header rounded-2xl p-8 text-white mb-8">
+            <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
+                <!-- Profile Image -->
+                <div class="relative">
+                    <img id="profileImage" src="https://placehold.co/300x400/eee/aaa?text=No+Image" 
+                         class="w-48 h-48 object-cover rounded-xl border-4 border-white shadow-lg">
+                    <div class="absolute top-4 right-4">
+                        <span class="status-badge verified">
+                            <i class="fas fa-check-circle mr-1"></i>
+                            Verified
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Profile Info -->
+                <div class="flex-1">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div>
+                            <h1 class="text-3xl font-bold mb-2" id="maidName">Loading...</h1>
+                            <div class="flex items-center gap-4 text-indigo-100">
+                                <span class="flex items-center">
+                                    <i class="fas fa-map-marker-alt mr-2"></i>
+                                    <span id="location">Loading...</span>
+                                </span>
+                                <span class="flex items-center">
+                                    <i class="fas fa-briefcase mr-2"></i>
+                                    <span id="experience">Loading...</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold mb-1" id="salary">Loading...</div>
+                            <div class="text-indigo-100">Expected Salary</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <h3 class="text-lg font-medium mb-3">Services Offered</h3>
+                        <div class="flex flex-wrap gap-3" id="servicesList">
+                            <!-- Services will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- About Section -->
+                <div class="feature-card">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">About</h2>
+                    <p class="text-gray-600" id="description">Loading...</p>
+                </div>
+
+                <!-- Experience Timeline -->
+                <div class="feature-card">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Work Experience</h2>
+                    <div class="space-y-6" id="experienceTimeline">
+                        <!-- Experience items will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Skills & Expertise -->
+                <div class="feature-card">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Skills & Expertise</h2>
+                    <div class="grid grid-cols-2 gap-4" id="skillsGrid">
+                        <!-- Skills will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="space-y-8">
+                <!-- Contact Card -->
+                <div class="feature-card">
+                    <div class="text-center">
+                        <div class="mb-6">
+                            <div class="text-2xl font-bold text-gray-900">Contact Information</div>
+                            <p class="text-gray-600 mt-2">Unlock contact details to get in touch</p>
+                        </div>
+
+                        <!-- Blurred Preview -->
+                        <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                            <div class="space-y-4">
+                                <div class="contact-blur">
+                                    <div class="text-lg font-medium">+977 98XXXXXXXX</div>
+                                    <div class="text-gray-600">Phone Number</div>
+                                </div>
+                                <div class="contact-blur">
+                                    <div class="text-lg font-medium">XXXXX@gmail.com</div>
+                                    <div class="text-gray-600">Email Address</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Unlock Button -->
+                        <button id="unlockButton" class="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-200 transition-all duration-200">
+                            <span class="flex items-center justify-center">
+                                <i class="fas fa-lock mr-2"></i>
+                                Unlock Contact (Rs. 100)
+                            </span>
+                        </button>
+
+                        <!-- Features List -->
+                        <div class="mt-6 text-left">
+                            <div class="flex items-center text-gray-600 mb-3">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span>Verified contact information</span>
+                            </div>
+                            <div class="flex items-center text-gray-600 mb-3">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span>Background checked</span>
+                            </div>
+                            <div class="flex items-center text-gray-600">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span>Direct communication</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Verification Status -->
+                <div class="feature-card">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Verification Status</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-id-card text-indigo-600 mr-3"></i>
+                                <span class="text-gray-700">Identity Verified</span>
+                            </div>
+                            <i class="fas fa-check-circle text-green-500"></i>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-shield-alt text-indigo-600 mr-3"></i>
+                                <span class="text-gray-700">Background Check</span>
+                            </div>
+                            <i class="fas fa-check-circle text-green-500"></i>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-phone-alt text-indigo-600 mr-3"></i>
+                                <span class="text-gray-700">Phone Verified</span>
+                            </div>
+                            <i class="fas fa-check-circle text-green-500"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Availability -->
+                <div class="feature-card">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Availability</h2>
+                    <div class="space-y-3" id="availabilitySchedule">
+                        <!-- Availability will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-lock-open text-2xl text-indigo-600"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Unlock Contact Details</h2>
+                <p class="text-gray-600 mb-6">One-time payment to unlock contact information</p>
+                
+                <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-gray-600">Unlock Fee</span>
+                        <span class="text-xl font-bold text-gray-900">Rs. 100</span>
+                    </div>
+                    <div class="text-sm text-gray-500">
+                        Includes unlimited access to contact information
+                    </div>
+                </div>
+
+                <button id="payButton" class="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-200 transition-all duration-200 mb-4">
+                    Pay with Khalti
+                </button>
+                
+                <button onclick="closePaymentModal()" class="text-gray-600 hover:text-gray-800">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <p class="text-center text-gray-400">&copy; <span id="currentYear"></span> City Maid Services. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        
+        // Initialize Supabase Client
+        const supabaseUrl = 'https://fdgqqxyyofjnkhswkwcq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkZ3FxeHl5b2Zqbmtoc3drd2NxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwMjQyMTMsImV4cCI6MjA1OTYwMDIxM30.YyJLLu3r2a7Mh7ny0ie-YzzLfPh5PdrJJHnBFBxWqVE';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Format salary
+        function formatSalary(salary) {
+            return `Rs. ${new Intl.NumberFormat('en-IN').format(salary)}`;
+        }
+
+        // Load maid profile
+        async function loadMaidProfile() {
+            try {
+                // Get maid ID from URL parameter
+                const urlParams = new URLSearchParams(window.location.search);
+                const maidId = urlParams.get('id');
+
+                if (!maidId) {
+                    throw new Error('No maid ID provided');
+                }
+
+                // Fetch maid profile
+                const { data: maid, error } = await supabase
+                    .from('maids')
+                    .select('*')
+                    .eq('id', maidId)
+                    .single();
+
+                if (error) throw error;
+
+                // Update UI with maid data
+                document.getElementById('maidName').textContent = maid.full_name;
+                document.getElementById('location').textContent = maid.location;
+                document.getElementById('experience').textContent = maid.experience;
+                document.getElementById('salary').textContent = formatSalary(maid.expected_salary);
+                document.getElementById('description').textContent = maid.description || 'No description available';
+
+                // Update profile image
+                if (maid.profile_image) {
+                    document.getElementById('profileImage').src = maid.profile_image;
+                }
+
+                // Load services
+                const servicesList = maid.services.map(service => 
+                    `<span class="service-badge">${service}</span>`
+                ).join('');
+                document.getElementById('servicesList').innerHTML = servicesList;
+
+                // Load skills
+                const skillsHtml = maid.services.map(skill => `
+                    <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+                        <i class="fas fa-check text-indigo-600 mr-3"></i>
+                        <span class="text-gray-700">${skill}</span>
+                    </div>
+                `).join('');
+                document.getElementById('skillsGrid').innerHTML = skillsHtml;
+
+                // Check if contact is already unlocked
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session?.user) {
+                    const { data: payment } = await supabase
+                        .from('payments')
+                        .select('*')
+                        .eq('user_id', session.user.id)
+                        .eq('maid_id', maidId)
+                        .single();
+
+                    if (payment) {
+                        showUnlockedContact(maid);
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error loading maid profile:', error);
+                // Show error message
+            }
+        }
+
+        // Show unlocked contact information
+        function showUnlockedContact(maid) {
+            const contactPreview = document.querySelector('.contact-blur').parentElement;
+            contactPreview.innerHTML = `
+                <div>
+                    <div class="text-lg font-medium">${maid.contact_phone}</div>
+                    <div class="text-gray-600">Phone Number</div>
+                </div>
+                <div class="mt-4">
+                    <div class="text-lg font-medium">${maid.contact_email}</div>
+                    <div class="text-gray-600">Email Address</div>
+                </div>
+            `;
+
+            // Update unlock button
+            const unlockButton = document.getElementById('unlockButton');
+            unlockButton.innerHTML = `
+                <span class="flex items-center justify-center">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    Contact Unlocked
+                </span>
+            `;
+            unlockButton.disabled = true;
+            unlockButton.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+            unlockButton.classList.add('bg-green-600', 'cursor-not-allowed');
+        }
+
+        // Payment Modal Functions
+        function showPaymentModal() {
+            document.getElementById('paymentModal').classList.remove('hidden');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.add('hidden');
+        }
+
+        // Initialize Khalti
+        let config = {
+            publicKey: "test_public_key_dc74e0fd57cb46cd93832aee0a390234",
+            productIdentity: "maid_contact",
+            productName: "Maid Contact Information",
+            productUrl: window.location.href,
+            eventHandler: {
+                onSuccess: async function (payload) {
+                    try {
+                        // Get current user
+                        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                        if (sessionError) throw sessionError;
+
+                        // Get maid ID from URL
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const maidId = urlParams.get('id');
+
+                        // Save payment record
+                        const { error: paymentError } = await supabase
+                            .from('payments')
+                            .insert([{
+                                user_id: session.user.id,
+                                maid_id: maidId,
+                                amount: 100,
+                                payment_id: payload.idx,
+                                payment_type: 'maid_contact',
+                                status: 'completed'
+                            }]);
+
+                        if (paymentError) throw paymentError;
+
+                        // Fetch maid data and show contact
+                        const { data: maid, error: maidError } = await supabase
+                            .from('maids')
+                            .select('*')
+                            .eq('id', maidId)
+                            .single();
+
+                        if (maidError) throw maidError;
+
+                        showUnlockedContact(maid);
+                        closePaymentModal();
+
+                    } catch (error) {
+                        console.error('Error processing payment:', error);
+                        alert('Error processing payment. Please try again.');
+                    }
+                },
+                onError: function (error) {
+                    console.error('Khalti payment error:', error);
+                    alert('Payment failed. Please try again.');
+                },
+                onClose: function () {
+                    closePaymentModal();
+                }
+            }
+        };
+
+        // Initialize payment button
+        document.getElementById('unlockButton').addEventListener('click', async function() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                window.location.href = `signin.html?redirect=${encodeURIComponent(window.location.href)}`;
+                return;
+            }
+            showPaymentModal();
+        });
+
+        // Load profile when page loads
+        document.addEventListener('DOMContentLoaded', loadMaidProfile);
+    </script>
+</body>
+</html>

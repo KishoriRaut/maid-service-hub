@@ -1,0 +1,13 @@
+{
+  "name": "citymaid",
+  "version": "1.0.0",
+  "description": "CityMaid Platform",
+  "scripts": {
+    "build:css": "tailwindcss -i ./css/input.css -o ./css/output.css --minify",
+    "watch:css": "tailwindcss -i ./css/input.css -o ./css/output.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1",
+    "@supabase/supabase-js": "^2.39.3"
+  }
+} 

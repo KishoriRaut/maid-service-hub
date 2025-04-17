@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - City Maid Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js"></script>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <h1 class="text-xl font-bold text-gray-800">City Maid Services</h1>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button id="logoutButton" class="ml-4 px-4 py-2 text-sm text-red-600 hover:text-red-800">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="px-4 py-6 sm:px-0">
+            <div class="bg-white shadow rounded-lg p-6">
+                <h2 class="text-2xl font-bold mb-4">Welcome to Your Dashboard</h2>
+                
+                <!-- Profile Information -->
+                <div id="profileInfo" class="mb-6">
+                    <h3 class="text-lg font-semibold mb-2">Your Profile</h3>
+                    <div id="profileContent" class="text-gray-600">
+                        Loading profile...
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h3 class="text-lg font-semibold mb-2">Quick Actions</h3>
+                        <div class="space-y-2">
+                            <button class="w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-blue-100 rounded">
+                                Update Profile
+                            </button>
+                            <button class="w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-blue-100 rounded">
+                                View Messages
+                            </button>
+                            <button class="w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-blue-100 rounded">
+                                Payment History
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h3 class="text-lg font-semibold mb-2">Recent Activity</h3>
+                        <div class="text-sm text-gray-600">
+                            No recent activity to show.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Wait for the page to load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Supabase client
+            const supabaseUrl = 'https://fdgqqxyyofjnkhswkwcq.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkZ3FxeHl5b2Zqbmtoc3drd2NxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwMjQyMTMsImV4cCI6MjA1OTYwMDIxM30.YyJLLu3r2a7Mh7ny0ie-YzzLfPh5PdrJJHnBFBxWqVE';
+            
+            // Create the Supabase client
+            const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+            
+            // Load profile information
+            async function loadProfile() {
+                try {
+                    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+                    
+                    if (userError) {
+                        throw userError;
+                    }
+                    
+                    if (!user) {
+                        window.location.href = '../auth/login.html';
+                        return;
+                    }
+                    
+                    const { data: profile, error: profileError } = await supabaseClient
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', user.id)
+                        .single();
+                    
+                    if (profileError) {
+                        throw profileError;
+                    }
+                    
+                    // Display profile information
+                    const profileContent = document.getElementById('profileContent');
+                    profileContent.innerHTML = `
+                        <p><strong>Name:</strong> ${profile.full_name || 'Not set'}</p>
+                        <p><strong>Email:</strong> ${user.email}</p>
+                        <p><strong>Member since:</strong> ${new Date(profile.created_at).toLocaleDateString()}</p>
+                    `;
+                    
+                } catch (error) {
+                    console.error('Error loading profile:', error);
+                    document.getElementById('profileContent').innerHTML = `
+                        <p class="text-red-600">Error loading profile information.</p>
+                    `;
+                }
+            }
+            
+            // Handle logout
+            document.getElementById('logoutButton').addEventListener('click', async function() {
+                try {
+                    const { error } = await supabaseClient.auth.signOut();
+                    if (error) {
+                        throw error;
+                    }
+                    window.location.href = '../auth/login.html';
+                } catch (error) {
+                    console.error('Error signing out:', error);
+                }
+            });
+            
+            // Load profile when page loads
+            loadProfile();
+        });
+    </script>
+</body>
+</html> 

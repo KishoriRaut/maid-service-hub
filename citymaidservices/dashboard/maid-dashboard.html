@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maid Dashboard - City Maid</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="../index.html" class="text-2xl font-bold text-brand-primary">City Maid</a>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button id="logoutButton" class="ml-4 px-4 py-2 text-sm font-medium text-gray-700 hover:text-brand-primary">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Welcome Section -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Welcome, <span id="userName">Loading...</span></h1>
+                    <p class="text-gray-600 mt-1">Manage your profile and view contact requests</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <p class="text-sm text-gray-600">Profile Status</p>
+                        <p id="profileStatus" class="text-sm font-medium text-green-500">Active</p>
+                    </div>
+                    <div class="h-10 w-10 rounded-full bg-brand-primary text-white flex items-center justify-center">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-blue-100 text-blue-500">
+                        <i class="fas fa-eye text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-600">Profile Views</p>
+                        <p id="profileViews" class="text-2xl font-semibold text-gray-900">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-green-100 text-green-500">
+                        <i class="fas fa-envelope text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-600">Contact Requests</p>
+                        <p id="contactRequests" class="text-2xl font-semibold text-gray-900">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-purple-100 text-purple-500">
+                        <i class="fas fa-wallet text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-600">Earnings</p>
+                        <p id="totalEarnings" class="text-2xl font-semibold text-gray-900">$0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Profile Management -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Profile Management</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <h3 class="font-medium text-gray-900">Profile Information</h3>
+                                <p class="text-sm text-gray-600">Update your personal and professional details</p>
+                            </div>
+                            <button onclick="window.location.href='../profile/edit-profile.html'" class="px-4 py-2 bg-brand-primary text-white rounded-lg hover:bg-brand-secondary transition-colors">
+                                Edit Profile
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <h3 class="font-medium text-gray-900">Profile Image</h3>
+                                <p class="text-sm text-gray-600">Change your profile picture</p>
+                            </div>
+                            <button onclick="window.location.href='../profile/edit-profile.html#image'" class="px-4 py-2 bg-brand-primary text-white rounded-lg hover:bg-brand-secondary transition-colors">
+                                Update Image
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <h3 class="font-medium text-gray-900">Services & Rates</h3>
+                                <p class="text-sm text-gray-600">Manage your services and pricing</p>
+                            </div>
+                            <button onclick="window.location.href='../profile/edit-profile.html#services'" class="px-4 py-2 bg-brand-primary text-white rounded-lg hover:bg-brand-secondary transition-colors">
+                                Update Services
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Contact Requests -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Recent Contact Requests</h2>
+                    <div id="contactRequestsList" class="space-y-4">
+                        <!-- Contact requests will be loaded here -->
+                        <div class="text-center text-gray-600 py-4">Loading contact requests...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Payment History -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Payment History</h2>
+                    <div id="paymentHistory" class="space-y-4">
+                        <!-- Payment history will be loaded here -->
+                        <div class="text-center text-gray-600 py-4">Loading payment history...</div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
+                    <div class="space-y-4">
+                        <button onclick="window.location.href='../profile/edit-profile.html'" class="w-full px-4 py-2 bg-brand-primary text-white rounded-lg hover:bg-brand-secondary transition-colors">
+                            <i class="fas fa-edit mr-2"></i>Edit Profile
+                        </button>
+                        <button onclick="window.location.href='../jobs/find-jobs.html'" class="w-full px-4 py-2 bg-white text-brand-primary border-2 border-brand-primary rounded-lg hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-search mr-2"></i>Browse Jobs
+                        </button>
+                        <button onclick="window.location.href='../payments/withdraw.html'" class="w-full px-4 py-2 bg-white text-brand-primary border-2 border-brand-primary rounded-lg hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-money-bill-wave mr-2"></i>Withdraw Earnings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://fdgqqxyyofjnkhswkwcq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkZ3FxeHl5b2Zqbmtoc3drd2NxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwMjQyMTMsImV4cCI6MjA1OTYwMDIxM30.YyJLLu3r2a7Mh7ny0ie-YzzLfPh5PdrJJHnBFBxWqVE';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Initialize dashboard when DOM is loaded
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Get current user
+                const { data: { user }, error: userError } = await supabase.auth.getUser();
+                if (userError) throw userError;
+
+                if (!user) {
+                    window.location.href = '../auth/login.html';
+                    return;
+                }
+
+                // Get maid profile
+                const { data: profile, error: profileError } = await supabase
+                    .from('maids')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .single();
+
+                if (profileError) throw profileError;
+
+                // Update welcome message
+                document.getElementById('userName').textContent = profile.full_name;
+
+                // Get profile views
+                const { data: views, error: viewsError } = await supabase
+                    .from('profile_views')
+                    .select('count')
+                    .eq('maid_id', profile.id)
+                    .single();
+
+                if (!viewsError) {
+                    document.getElementById('profileViews').textContent = views.count || 0;
+                }
+
+                // Get contact requests
+                const { data: contacts, error: contactsError } = await supabase
+                    .from('contact_requests')
+                    .select('*, employers(*)')
+                    .eq('maid_id', profile.id)
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+
+                if (!contactsError) {
+                    const contactsList = document.getElementById('contactRequestsList');
+                    contactsList.innerHTML = '';
+
+                    if (contacts.length === 0) {
+                        contactsList.innerHTML = '<div class="text-center text-gray-600 py-4">No contact requests yet</div>';
+                    } else {
+                        contacts.forEach(contact => {
+                            const contactElement = document.createElement('div');
+                            contactElement.className = 'p-4 bg-gray-50 rounded-lg';
+                            contactElement.innerHTML = `
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h3 class="font-medium text-gray-900">${contact.employers.full_name}</h3>
+                                        <p class="text-sm text-gray-600">${new Date(contact.created_at).toLocaleDateString()}</p>
+                                    </div>
+                                    <span class="px-2 py-1 text-xs font-medium rounded-full ${contact.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}">
+                                        ${contact.status}
+                                    </span>
+                                </div>
+                            `;
+                            contactsList.appendChild(contactElement);
+                        });
+                    }
+                }
+
+                // Get payment history
+                const { data: payments, error: paymentsError } = await supabase
+                    .from('payments')
+                    .select('*')
+                    .eq('maid_id', profile.id)
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+
+                if (!paymentsError) {
+                    const paymentHistory = document.getElementById('paymentHistory');
+                    paymentHistory.innerHTML = '';
+
+                    if (payments.length === 0) {
+                        paymentHistory.innerHTML = '<div class="text-center text-gray-600 py-4">No payment history yet</div>';
+                    } else {
+                        let totalEarnings = 0;
+                        payments.forEach(payment => {
+                            totalEarnings += payment.amount;
+                            const paymentElement = document.createElement('div');
+                            paymentElement.className = 'flex justify-between items-center p-3 bg-gray-50 rounded-lg';
+                            paymentElement.innerHTML = `
+                                <div>
+                                    <p class="font-medium text-gray-900">$${payment.amount.toFixed(2)}</p>
+                                    <p class="text-sm text-gray-600">${new Date(payment.created_at).toLocaleDateString()}</p>
+                                </div>
+                                <span class="px-2 py-1 text-xs font-medium rounded-full ${payment.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                                    ${payment.status}
+                                </span>
+                            `;
+                            paymentHistory.appendChild(paymentElement);
+                        });
+                        document.getElementById('totalEarnings').textContent = `$${totalEarnings.toFixed(2)}`;
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                // Show error message to user
+                alert('An error occurred while loading the dashboard. Please try again.');
+            }
+        });
+
+        // Handle logout
+        document.getElementById('logoutButton').addEventListener('click', async function() {
+            try {
+                const { error } = await supabase.auth.signOut();
+                if (error) throw error;
+                window.location.href = '../index.html';
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while logging out. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>

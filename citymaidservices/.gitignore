@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+package-lock.json
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build files
+dist/
+build/
+out/
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Keep only admin dashboard files
+/*
+!pages/
+pages/*
+!pages/dashboard/
+pages/dashboard/*
+!pages/dashboard/admin/
+!README.md 

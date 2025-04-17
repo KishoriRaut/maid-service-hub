@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Role - City Maid Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2.39.7"></script>
+    <style>
+        .page-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Initial Loading State -->
+    <div id="initialLoading" class="page-loading">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    </div>
+
+    <!-- Main Content (Hidden initially) -->
+    <div id="mainContent" class="hidden">
+        <div class="min-h-screen flex items-center justify-center">
+            <div class="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-2xl font-bold text-center mb-8">Select Your Role</h2>
+                
+                <!-- Error Message Display -->
+                <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"></div>
+                
+                <!-- Loading Spinner -->
+                <div id="loadingSpinner" class="hidden">
+                    <div class="flex justify-center">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    </div>
+                </div>
+                
+                <!-- Role Selection Form -->
+                <form id="roleForm" class="space-y-6">
+                    <div class="space-y-4">
+                        <div class="flex items-center p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="radio" id="maid" name="role" value="maid" class="h-4 w-4 text-blue-600 focus:ring-blue-500">
+                            <label for="maid" class="ml-3 block text-sm font-medium text-gray-700">
+                                I am a Maid (Service Provider)
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-center p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="radio" id="employer" name="role" value="employer" class="h-4 w-4 text-blue-600 focus:ring-blue-500">
+                            <label for="employer" class="ml-3 block text-sm font-medium text-gray-700">
+                                I am an Employer (Looking for Services)
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit"
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Continue
+                    </button>
+                </form>
+                
+                <div class="mt-6">
+                    <p class="text-center text-sm text-gray-600">
+                        <a href="login.html" class="font-medium text-blue-600 hover:text-blue-500">
+                            Back to Login
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'https://fdgqqxyyofjnkhswkwcq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkZ3FxeHl5b2Zqbmtoc3drd2NxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwMjQyMTMsImV4cCI6MjA1OTYwMDIxM30.YyJLLu3r2a7Mh7ny0ie-YzzLfPh5PdrJJHnBFBxWqVE';
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Simple function to show errors
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+
+        // Function to show/hide loading spinner
+        function toggleLoading(show) {
+            const spinner = document.getElementById('loadingSpinner');
+            if (show) {
+                spinner.classList.remove('hidden');
+            } else {
+                spinner.classList.add('hidden');
+            }
+        }
+
+        // Function to show main content
+        function showMainContent() {
+            document.getElementById('initialLoading').classList.add('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
+        }
+
+        // Check authentication status
+        async function checkAuth() {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                
+                if (!session) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // If user already has a role, redirect to appropriate dashboard
+                const userRole = session.user.user_metadata.role;
+                if (userRole) {
+                    window.location.href = userRole === 'employer' ? '../employer/dashboard.html' : '../maid/dashboard.html';
+                    return;
+                }
+                
+                // If no role set, show role selection page
+                showMainContent();
+            } catch (error) {
+                console.error('Auth check error:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('roleForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const selectedRole = document.querySelector('input[name="role"]:checked');
+            if (!selectedRole) {
+                showError('Please select a role');
+                return;
+            }
+
+            try {
+                toggleLoading(true);
+                
+                // Get current user
+                const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+                if (userError) throw userError;
+                
+                if (!user) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Update user metadata with role
+                const { error: updateError } = await supabaseClient.auth.updateUser({
+                    data: { role: selectedRole.value }
+                });
+
+                if (updateError) throw updateError;
+
+                // Store role in localStorage for persistence
+                localStorage.setItem('userType', selectedRole.value);
+
+                // Redirect to appropriate profile setup page
+                window.location.href = selectedRole.value === 'maid' ? 
+                    '../maid/setup-profile.html' : 
+                    '../employer/setup-profile.html';
+            } catch (error) {
+                console.error('Role selection error:', error);
+                showError(error.message || 'An error occurred. Please try again.');
+            } finally {
+                toggleLoading(false);
+            }
+        });
+
+        // Check auth status when page loads
+        checkAuth();
+    </script>
+</body>
+</html> 
