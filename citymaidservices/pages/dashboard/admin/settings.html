@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - City Maid</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Supabase Configuration -->
+    <script src="../../js/supabase-config.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-primary': '#0056B3',
+                        'brand-secondary': '#003D82',
+                        'brand-light': '#E6F0FF'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="hidden md:flex md:flex-shrink-0">
+            <div class="flex flex-col w-64">
+                <div class="flex flex-col flex-grow pt-5 overflow-y-auto bg-white border-r">
+                    <div class="flex flex-col flex-shrink-0 px-4">
+                        <a href="../index.html" class="text-3xl font-bold text-brand-primary tracking-tight">City<span class="text-brand-secondary">Maid</span></a>
+                    </div>
+                    <div class="flex flex-col flex-grow px-4 mt-5">
+                        <nav class="flex-1 space-y-1">
+                            <a href="admin-dashboard.html" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg hover:bg-brand-light group">
+                                <i class="fas fa-chart-line mr-3 text-brand-primary"></i>
+                                Dashboard
+                            </a>
+                            <a href="manage-users.html" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg hover:bg-brand-light group">
+                                <i class="fas fa-users mr-3 text-brand-primary"></i>
+                                Manage Users
+                            </a>
+                            <a href="manage-jobs.html" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg hover:bg-brand-light group">
+                                <i class="fas fa-briefcase mr-3 text-brand-primary"></i>
+                                Manage Jobs
+                            </a>
+                            <a href="manage-maids.html" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg hover:bg-brand-light group">
+                                <i class="fas fa-broom mr-3 text-brand-primary"></i>
+                                Manage Maids
+                            </a>
+                            <a href="manage-payments.html" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg hover:bg-brand-light group">
+                                <i class="fas fa-credit-card mr-3 text-brand-primary"></i>
+                                Manage Payments
+                            </a>
+                            <a href="settings.html" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-brand-light text-brand-primary group">
+                                <i class="fas fa-cog mr-3"></i>
+                                Settings
+                            </a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main content area -->
+        <div class="flex flex-col flex-1 overflow-hidden">
+            <!-- Top bar -->
+            <header class="flex-shrink-0 relative h-16 bg-white flex items-center shadow-sm">
+                <button type="button" class="px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-primary md:hidden" id="mobile-menu-button">
+                    <span class="sr-only">Open sidebar</span>
+                    <i class="fas fa-bars h-6 w-6 text-brand-primary"></i>
+                </button>
+
+                <div class="flex-1 px-4 flex justify-between">
+                    <div class="flex-1 flex">
+                        <h1 class="text-2xl font-semibold text-gray-900">Settings</h1>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main content -->
+            <main class="flex-1 relative overflow-y-auto focus:outline-none">
+                <div class="py-6">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+                        <!-- Settings Sections -->
+                        <div class="space-y-6">
+                            <!-- Platform Settings -->
+                            <div class="bg-white shadow rounded-lg">
+                                <div class="px-4 py-5 sm:p-6">
+                                    <h3 class="text-lg leading-6 font-medium text-gray-900">Platform Settings</h3>
+                                    <div class="mt-5 space-y-4">
+                                        <div>
+                                            <label for="contact-unlock-fee" class="block text-sm font-medium text-gray-700">Contact Unlock Fee</label>
+                                            <div class="mt-1 relative rounded-md shadow-sm">
+                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <span class="text-gray-500 sm:text-sm" id="currency-symbol">रू</span>
+                                                </div>
+                                                <input type="number" id="contact-unlock-fee" name="contact-unlock-fee" 
+                                                    class="focus:ring-brand-primary focus:border-brand-primary block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
+                                                    value="5.00" step="0.01" min="0">
+                                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                    <span class="text-gray-500 sm:text-sm" id="current-fee-display"></span>
+                                                </div>
+                                            </div>
+                                            <p class="mt-2 text-sm text-gray-500">Amount charged to unlock contact information</p>
+                                        </div>
+                                        <div>
+                                            <label for="max-active-listings" class="block text-sm font-medium text-gray-700">Maximum Active Listings per User</label>
+                                            <input type="number" id="max-active-listings" name="max-active-listings" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                value="3">
+                                        </div>
+                                        <div>
+                                            <label for="listing-duration" class="block text-sm font-medium text-gray-700">Listing Duration (days)</label>
+                                            <input type="number" id="listing-duration" name="listing-duration" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                value="30">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Payment Settings -->
+                            <div class="bg-white shadow rounded-lg">
+                                <div class="px-4 py-5 sm:p-6">
+                                    <h3 class="text-lg leading-6 font-medium text-gray-900">Payment Settings</h3>
+                                    <div class="mt-5 space-y-4">
+                                        <div>
+                                            <label for="payment-gateway" class="block text-sm font-medium text-gray-700">Payment Gateway</label>
+                                            <select id="payment-gateway" name="payment-gateway" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm">
+                                                <option value="stripe">Stripe</option>
+                                                <option value="khalti">Khalti</option>
+                                                <option value="both">Both (Stripe & Khalti)</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <!-- Stripe Settings -->
+                                        <div id="stripe-settings" class="space-y-4">
+                                            <h4 class="text-md font-medium text-gray-700">Stripe Settings</h4>
+                                            <div>
+                                                <label for="stripe-public-key" class="block text-sm font-medium text-gray-700">Stripe Public Key</label>
+                                                <input type="text" id="stripe-public-key" name="stripe-public-key" 
+                                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                    value="pk_test_...">
+                                            </div>
+                                            <div>
+                                                <label for="stripe-secret-key" class="block text-sm font-medium text-gray-700">Stripe Secret Key</label>
+                                                <input type="password" id="stripe-secret-key" name="stripe-secret-key" 
+                                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                    value="sk_test_...">
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Khalti Settings -->
+                                        <div id="khalti-settings" class="space-y-4">
+                                            <h4 class="text-md font-medium text-gray-700">Khalti Settings</h4>
+                                            <div>
+                                                <label for="khalti-public-key" class="block text-sm font-medium text-gray-700">Khalti Public Key</label>
+                                                <input type="text" id="khalti-public-key" name="khalti-public-key" 
+                                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                    value="test_public_key_...">
+                                            </div>
+                                            <div>
+                                                <label for="khalti-secret-key" class="block text-sm font-medium text-gray-700">Khalti Secret Key</label>
+                                                <input type="password" id="khalti-secret-key" name="khalti-secret-key" 
+                                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                    value="test_secret_key_...">
+                                            </div>
+                                            <div>
+                                                <label for="khalti-merchant-id" class="block text-sm font-medium text-gray-700">Khalti Merchant ID</label>
+                                                <input type="text" id="khalti-merchant-id" name="khalti-merchant-id" 
+                                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                    value="merchant_...">
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label for="currency" class="block text-sm font-medium text-gray-700">Currency</label>
+                                            <select id="currency" name="currency" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm">
+                                                <option value="USD">USD ($)</option>
+                                                <option value="NPR">NPR (रू)</option>
+                                                <option value="EUR">EUR (€)</option>
+                                                <option value="GBP">GBP (£)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Email Settings -->
+                            <div class="bg-white shadow rounded-lg">
+                                <div class="px-4 py-5 sm:p-6">
+                                    <h3 class="text-lg leading-6 font-medium text-gray-900">Email Settings</h3>
+                                    <div class="mt-5 space-y-4">
+                                        <div>
+                                            <label for="smtp-host" class="block text-sm font-medium text-gray-700">SMTP Host</label>
+                                            <input type="text" id="smtp-host" name="smtp-host" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                value="smtp.gmail.com">
+                                        </div>
+                                        <div>
+                                            <label for="smtp-port" class="block text-sm font-medium text-gray-700">SMTP Port</label>
+                                            <input type="number" id="smtp-port" name="smtp-port" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                value="587">
+                                        </div>
+                                        <div>
+                                            <label for="smtp-username" class="block text-sm font-medium text-gray-700">SMTP Username</label>
+                                            <input type="email" id="smtp-username" name="smtp-username" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                value="noreply@citymaid.com">
+                                        </div>
+                                        <div>
+                                            <label for="smtp-password" class="block text-sm font-medium text-gray-700">SMTP Password</label>
+                                            <input type="password" id="smtp-password" name="smtp-password" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                value="********">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- User Management Settings -->
+                            <div class="bg-white shadow rounded-lg">
+                                <div class="px-4 py-5 sm:p-6">
+                                    <h3 class="text-lg leading-6 font-medium text-gray-900">User Management Settings</h3>
+                                    <div class="mt-5 space-y-4">
+                                        <div class="flex items-start">
+                                            <div class="flex items-center h-5">
+                                                <input id="email-verification" name="email-verification" type="checkbox" 
+                                                    class="focus:ring-brand-primary h-4 w-4 text-brand-primary border-gray-300 rounded">
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <label for="email-verification" class="font-medium text-gray-700">Require Email Verification</label>
+                                                <p class="text-gray-500">Users must verify their email before posting.</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start">
+                                            <div class="flex items-center h-5">
+                                                <input id="phone-verification" name="phone-verification" type="checkbox" 
+                                                    class="focus:ring-brand-primary h-4 w-4 text-brand-primary border-gray-300 rounded">
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <label for="phone-verification" class="font-medium text-gray-700">Require Phone Verification</label>
+                                                <p class="text-gray-500">Users must verify their phone number before posting.</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start">
+                                            <div class="flex items-center h-5">
+                                                <input id="admin-approval" name="admin-approval" type="checkbox" 
+                                                    class="focus:ring-brand-primary h-4 w-4 text-brand-primary border-gray-300 rounded">
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <label for="admin-approval" class="font-medium text-gray-700">Require Admin Approval</label>
+                                                <p class="text-gray-500">New user registrations require admin approval.</p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label for="mandatory-profile-fields" class="block text-sm font-medium text-gray-700">Mandatory Profile Fields</label>
+                                            <div class="mt-2 space-y-2">
+                                                <div class="flex items-center">
+                                                    <input id="mandatory-name" name="mandatory-name" type="checkbox" 
+                                                        class="focus:ring-brand-primary h-4 w-4 text-brand-primary border-gray-300 rounded">
+                                                    <label for="mandatory-name" class="ml-2 block text-sm text-gray-700">Full Name</label>
+                                                </div>
+                                                <div class="flex items-center">
+                                                    <input id="mandatory-phone" name="mandatory-phone" type="checkbox" 
+                                                        class="focus:ring-brand-primary h-4 w-4 text-brand-primary border-gray-300 rounded">
+                                                    <label for="mandatory-phone" class="ml-2 block text-sm text-gray-700">Phone Number</label>
+                                                </div>
+                                                <div class="flex items-center">
+                                                    <input id="mandatory-location" name="mandatory-location" type="checkbox" 
+                                                        class="focus:ring-brand-primary h-4 w-4 text-brand-primary border-gray-300 rounded">
+                                                    <label for="mandatory-location" class="ml-2 block text-sm text-gray-700">Location</label>
+                                                </div>
+                                                <div class="flex items-center">
+                                                    <input id="mandatory-photo" name="mandatory-photo" type="checkbox" 
+                                                        class="focus:ring-brand-primary h-4 w-4 text-brand-primary border-gray-300 rounded">
+                                                    <label for="mandatory-photo" class="ml-2 block text-sm text-gray-700">Profile Photo</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Content Moderation Settings -->
+                            <div class="bg-white shadow rounded-lg">
+                                <div class="px-4 py-5 sm:p-6">
+                                    <h3 class="text-lg leading-6 font-medium text-gray-900">Content Moderation Settings</h3>
+                                    <div class="mt-5 space-y-4">
+                                        <div>
+                                            <label for="auto-flag-keywords" class="block text-sm font-medium text-gray-700">Auto-flagging Keywords (comma separated)</label>
+                                            <textarea id="auto-flag-keywords" name="auto-flag-keywords" rows="3" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                placeholder="spam, scam, inappropriate"></textarea>
+                                        </div>
+                                        <div>
+                                            <label for="content-review-threshold" class="block text-sm font-medium text-gray-700">Content Review Threshold</label>
+                                            <input type="number" id="content-review-threshold" name="content-review-threshold" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                value="3">
+                                            <p class="mt-1 text-sm text-gray-500">Number of reports needed before a listing is automatically hidden.</p>
+                                        </div>
+                                        <div>
+                                            <label for="moderation-queue-size" class="block text-sm font-medium text-gray-700">Moderation Queue Size</label>
+                                            <input type="number" id="moderation-queue-size" name="moderation-queue-size" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                value="20">
+                                            <p class="mt-1 text-sm text-gray-500">Number of listings to show in the moderation queue at once.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Security Settings -->
+                            <div class="bg-white shadow rounded-lg">
+                                <div class="px-4 py-5 sm:p-6">
+                                    <h3 class="text-lg leading-6 font-medium text-gray-900">Security Settings</h3>
+                                    <div class="mt-5 space-y-4">
+                                        <div>
+                                            <label for="min-password-length" class="block text-sm font-medium text-gray-700">Minimum Password Length</label>
+                                            <input type="number" id="min-password-length" name="min-password-length" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                value="8">
+                                        </div>
+                                        <div class="flex items-start">
+                                            <div class="flex items-center h-5">
+                                                <input id="require-special-chars" name="require-special-chars" type="checkbox" 
+                                                    class="focus:ring-brand-primary h-4 w-4 text-brand-primary border-gray-300 rounded">
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <label for="require-special-chars" class="font-medium text-gray-700">Require Special Characters</label>
+                                                <p class="text-gray-500">Passwords must contain at least one special character.</p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label for="login-attempts" class="block text-sm font-medium text-gray-700">Maximum Login Attempts</label>
+                                            <input type="number" id="login-attempts" name="login-attempts" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                value="5">
+                                        </div>
+                                        <div>
+                                            <label for="session-timeout" class="block text-sm font-medium text-gray-700">Session Timeout (minutes)</label>
+                                            <input type="number" id="session-timeout" name="session-timeout" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                value="60">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Notification Settings -->
+                            <div class="bg-white shadow rounded-lg">
+                                <div class="px-4 py-5 sm:p-6">
+                                    <h3 class="text-lg leading-6 font-medium text-gray-900">Notification Settings</h3>
+                                    <div class="mt-5 space-y-4">
+                                        <div>
+                                            <label for="admin-email" class="block text-sm font-medium text-gray-700">Admin Notification Email</label>
+                                            <input type="email" id="admin-email" name="admin-email" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                value="kishoriraut369@gmail.com">
+                                        </div>
+                                        <div class="flex items-start">
+                                            <div class="flex items-center h-5">
+                                                <input id="new-user-notifications" name="new-user-notifications" type="checkbox" 
+                                                    class="focus:ring-brand-primary h-4 w-4 text-brand-primary border-gray-300 rounded">
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <label for="new-user-notifications" class="font-medium text-gray-700">New User Notifications</label>
+                                                <p class="text-gray-500">Receive notifications when new users register.</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start">
+                                            <div class="flex items-center h-5">
+                                                <input id="payment-notifications" name="payment-notifications" type="checkbox" 
+                                                    class="focus:ring-brand-primary h-4 w-4 text-brand-primary border-gray-300 rounded">
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <label for="payment-notifications" class="font-medium text-gray-700">Payment Notifications</label>
+                                                <p class="text-gray-500">Receive notifications for successful payments.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- System Settings -->
+                            <div class="bg-white shadow rounded-lg">
+                                <div class="px-4 py-5 sm:p-6">
+                                    <h3 class="text-lg leading-6 font-medium text-gray-900">System Settings</h3>
+                                    <div class="mt-5 space-y-4">
+                                        <div class="flex items-start">
+                                            <div class="flex items-center h-5">
+                                                <input id="maintenance-mode" name="maintenance-mode" type="checkbox" 
+                                                    class="focus:ring-brand-primary h-4 w-4 text-brand-primary border-gray-300 rounded">
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <label for="maintenance-mode" class="font-medium text-gray-700">Maintenance Mode</label>
+                                                <p class="text-gray-500">Temporarily disable the platform for maintenance.</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start">
+                                            <div class="flex items-center h-5">
+                                                <input id="debug-mode" name="debug-mode" type="checkbox" 
+                                                    class="focus:ring-brand-primary h-4 w-4 text-brand-primary border-gray-300 rounded">
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <label for="debug-mode" class="font-medium text-gray-700">Debug Mode</label>
+                                                <p class="text-gray-500">Enable detailed error logging for troubleshooting.</p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label for="data-retention" class="block text-sm font-medium text-gray-700">Data Retention Period (days)</label>
+                                            <input type="number" id="data-retention" name="data-retention" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                value="365">
+                                            <p class="mt-1 text-sm text-gray-500">How long to keep inactive user data before deletion.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- API Settings -->
+                            <div class="bg-white shadow rounded-lg">
+                                <div class="px-4 py-5 sm:p-6">
+                                    <h3 class="text-lg leading-6 font-medium text-gray-900">API Settings</h3>
+                                    <div class="mt-5 space-y-4">
+                                        <div>
+                                            <label for="api-rate-limit" class="block text-sm font-medium text-gray-700">API Rate Limit (requests per minute)</label>
+                                            <input type="number" id="api-rate-limit" name="api-rate-limit" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                value="60">
+                                        </div>
+                                        <div>
+                                            <label for="api-key" class="block text-sm font-medium text-gray-700">API Key</label>
+                                            <div class="mt-1 flex rounded-md shadow-sm">
+                                                <input type="text" id="api-key" name="api-key" 
+                                                    class="flex-1 block w-full rounded-none rounded-l-md border-gray-300 focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                    value="sk_live_..." readonly>
+                                                <button type="button" onclick="generateApiKey()" 
+                                                    class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-r-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary">
+                                                    Generate
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label for="webhook-url" class="block text-sm font-medium text-gray-700">Webhook URL</label>
+                                            <input type="url" id="webhook-url" name="webhook-url" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                placeholder="https://your-webhook-url.com">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Analytics Settings -->
+                            <div class="bg-white shadow rounded-lg">
+                                <div class="px-4 py-5 sm:p-6">
+                                    <h3 class="text-lg leading-6 font-medium text-gray-900">Analytics Settings</h3>
+                                    <div class="mt-5 space-y-4">
+                                        <div>
+                                            <label for="google-analytics-id" class="block text-sm font-medium text-gray-700">Google Analytics ID</label>
+                                            <input type="text" id="google-analytics-id" name="google-analytics-id" 
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+                                                placeholder="UA-XXXXXXXXX-X">
+                                        </div>
+                                        <div class="flex items-start">
+                                            <div class="flex items-center h-5">
+                                                <input id="conversion-tracking" name="conversion-tracking" type="checkbox" 
+                                                    class="focus:ring-brand-primary h-4 w-4 text-brand-primary border-gray-300 rounded">
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <label for="conversion-tracking" class="font-medium text-gray-700">Conversion Tracking</label>
+                                                <p class="text-gray-500">Track payment conversions in analytics.</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start">
+                                            <div class="flex items-center h-5">
+                                                <input id="custom-event-tracking" name="custom-event-tracking" type="checkbox" 
+                                                    class="focus:ring-brand-primary h-4 w-4 text-brand-primary border-gray-300 rounded">
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <label for="custom-event-tracking" class="font-medium text-gray-700">Custom Event Tracking</label>
+                                                <p class="text-gray-500">Track custom events like profile views and searches.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Save Button -->
+                            <div class="flex justify-end">
+                                <button type="button" id="save-settings-button" onclick="saveSettings()" 
+                                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-brand-primary hover:bg-brand-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary transition-colors duration-200">
+                                    <i class="fas fa-save mr-2" id="save-button-icon"></i>
+                                    <span id="save-button-text">Save Settings</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Supabase client
+        let supabaseClient;
+        let settingsLoaded = false;
+
+        // Function to check if settings table exists
+        async function checkSettingsTable() {
+            try {
+                const { data, error } = await window.supabaseClient
+                    .from('settings')
+                    .select('*')
+                    .limit(1);
+                
+                if (error) {
+                    console.error('Error checking settings table:', error);
+                    return false;
+                }
+                return true;
+            } catch (error) {
+                console.error('Error checking settings table:', error);
+                return false;
+            }
+        }
+
+        // Function to create settings table
+        async function createSettingsTable() {
+            try {
+                const { error } = await window.supabaseClient.rpc('create_settings_table');
+                if (error) {
+                    console.error('Error creating settings table:', error);
+                    return false;
+                }
+                return true;
+            } catch (error) {
+                console.error('Error creating settings table:', error);
+                return false;
+            }
+        }
+
+        // Function to load settings
+        async function loadSettings() {
+            try {
+                // First try to load from Supabase
+                const { data, error } = await window.supabaseClient
+                    .from('settings')
+                    .select('*')
+                    .single();
+
+                if (error) {
+                    console.error('Error loading settings:', error);
+                    // If table doesn't exist, create it
+                    if (error.code === 'PGRST116') {
+                        const tableCreated = await createSettingsTable();
+                        if (tableCreated) {
+                            // Try loading again after creating table
+                            return await loadSettings();
+                        }
+                    }
+                    throw error;
+                }
+
+                if (data) {
+                    // Save to local storage as backup
+                    localStorage.setItem('settings', JSON.stringify(data));
+                    return data;
+                }
+
+                // If no data found, create default settings
+                const defaultSettings = {
+                    max_listings: 5,
+                    listing_duration: 30,
+                    contact_unlock_fee: 100,
+                    stripe_public_key: '',
+                    stripe_secret_key: '',
+                    currency: 'NPR',
+                    smtp_host: '',
+                    smtp_port: '',
+                    smtp_username: '',
+                    smtp_password: '',
+                    admin_email: 'kishoriraut369@gmail.com'
+                };
+
+                // Save default settings to Supabase
+                const { error: insertError } = await window.supabaseClient
+                    .from('settings')
+                    .insert([defaultSettings]);
+
+                if (insertError) {
+                    console.error('Error inserting default settings:', insertError);
+                    // Save to local storage as backup
+                    localStorage.setItem('settings', JSON.stringify(defaultSettings));
+                    return defaultSettings;
+                }
+
+                return defaultSettings;
+            } catch (error) {
+                console.error('Error in loadSettings:', error);
+                // Try to load from local storage
+                const localSettings = localStorage.getItem('settings');
+                if (localSettings) {
+                    return JSON.parse(localSettings);
+                }
+                throw error;
+            }
+        }
+
+        // Function to save settings
+        async function saveSettings(settings) {
+            try {
+                // First save to local storage as backup
+                localStorage.setItem('settings', JSON.stringify(settings));
+
+                // Then try to save to Supabase
+                const { error } = await window.supabaseClient
+                    .from('settings')
+                    .upsert([settings]);
+
+                if (error) {
+                    console.error('Error saving settings:', error);
+                    // If table doesn't exist, create it and try again
+                    if (error.code === 'PGRST116') {
+                        const tableCreated = await createSettingsTable();
+                        if (tableCreated) {
+                            return await saveSettings(settings);
+                        }
+                    }
+                    throw error;
+                }
+
+                return true;
+            } catch (error) {
+                console.error('Error in saveSettings:', error);
+                // At least we have the backup in local storage
+                return false;
+            }
+        }
+
+        // Function to update form with settings
+        function updateFormWithSettings(settings) {
+            try {
+                Object.keys(settings).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        if (element.type === 'checkbox') {
+                            element.checked = settings[key];
+                        } else {
+                            element.value = settings[key];
+                        }
+                    }
+                });
+                settingsLoaded = true;
+            } catch (error) {
+                console.error('Error updating form:', error);
+            }
+        }
+
+        // Initialize settings when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Wait for Supabase client to be ready
+                let attempts = 0;
+                const maxAttempts = 10;
+                
+                const checkSupabase = setInterval(async () => {
+                    attempts++;
+                    if (window.supabaseClient) {
+                        clearInterval(checkSupabase);
+                        const settings = await loadSettings();
+                        updateFormWithSettings(settings);
+                    } else if (attempts >= maxAttempts) {
+                        clearInterval(checkSupabase);
+                        // Load from local storage as fallback
+                        const localSettings = localStorage.getItem('settings');
+                        if (localSettings) {
+                            updateFormWithSettings(JSON.parse(localSettings));
+                        }
+                    }
+                }, 1000);
+            } catch (error) {
+                console.error('Error initializing settings:', error);
+            }
+        });
+
+        // Add event listeners for form changes
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('change', async () => {
+                if (!settingsLoaded) return;
+                
+                const settings = {};
+                document.querySelectorAll('input, select').forEach(input => {
+                    settings[input.id] = input.type === 'checkbox' ? input.checked : input.value;
+                });
+
+                try {
+                    const saved = await saveSettings(settings);
+                    if (!saved) {
+                        console.warn('Settings saved locally but failed to sync with server');
+                    }
+                } catch (error) {
+                    console.error('Error saving settings:', error);
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
