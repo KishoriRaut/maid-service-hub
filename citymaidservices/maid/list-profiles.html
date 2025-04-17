@@ -4,84 +4,272 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maid Profiles - City Maid Services</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="../js/maid-profiles.js"></script>
-</head>
-<body class="bg-gray-100 min-h-screen">
-    <header class="bg-white shadow">
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <h1 class="text-3xl font-bold text-gray-900">Maid Profiles</h1>
-        </div>
-    </header>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            primary: '#4F46E5',
+                            secondary: '#4338CA',
+                            light: '#EEF2FF',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .section-title {
+                @apply relative inline-block pb-4;
+            }
 
-    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <!-- Filters Section -->
-        <div class="bg-white shadow rounded-lg p-6 mb-6">
-            <h2 class="text-lg font-medium text-gray-900 mb-4">Filter Profiles</h2>
-            <form id="filter-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            .section-title::after {
+                content: '';
+                @apply absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[3px] bg-gradient-to-r from-brand-primary to-brand-secondary rounded-sm;
+            }
+
+            .badge {
+                @apply bg-gradient-to-r from-brand-primary to-brand-secondary px-4 py-2 rounded-full text-white font-medium text-sm leading-5;
+            }
+
+            .truncate-2 {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                @apply overflow-hidden;
+            }
+        }
+    </style>
+</head>
+<body class="font-poppins bg-gray-100 min-h-screen">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
+                <div class="flex items-center">
+                    <a href="../index.html" class="text-3xl font-bold text-brand-primary tracking-tight">City<span class="text-brand-secondary"> Maid Services</span></a>
+                </div>
+                <!-- Mobile menu button -->
+                <div class="flex items-center md:hidden">
+                    <button id="mobileMenuBtn" class="text-gray-700 hover:text-brand-primary focus:outline-none" aria-label="Open menu">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+                <!-- Desktop menu -->
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="../index.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Home</a>
+                    <a href="../jobs/find-jobs.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Find Jobs</a>
+                    <a href="../static/contact.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Contact Us</a>
+                    <a href="../static/about.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">About Us</a>
+                    <a href="../auth/login.html" class="bg-brand-primary text-white px-6 py-3 rounded-lg hover:bg-brand-secondary font-semibold transition-colors">Sign In</a>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile menu panel -->
+        <div id="mobileMenu" class="hidden md:hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+            <div class="fixed inset-y-0 right-0 max-w-xs w-full bg-white shadow-xl">
+                <div class="flex items-center justify-between p-4 border-b">
+                    <div class="flex items-center space-x-4">
+                        <button onclick="window.history.back()" class="text-gray-500 hover:text-gray-700" aria-label="Go back">
+                            <i class="fas fa-arrow-left text-xl"></i>
+                        </button>
+                        <a href="../index.html" class="text-gray-500 hover:text-gray-700" aria-label="Go to homepage">
+                            <i class="fas fa-home text-xl"></i>
+                        </a>
+                    </div>
+                    <h2 class="text-xl font-semibold text-gray-900">Menu</h2>
+                    <button id="closeMobileMenu" class="text-gray-500 hover:text-gray-700" aria-label="Close menu">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+                <div class="p-4 space-y-4">
+                    <a href="../index.html" class="block text-gray-700 hover:text-brand-primary py-2">Home</a>
+                    <a href="../jobs/find-jobs.html" class="block text-gray-700 hover:text-brand-primary py-2">Find Jobs</a>
+                    <a href="../static/contact.html" class="block text-gray-700 hover:text-brand-primary py-2">Contact Us</a>
+                    <a href="../static/about.html" class="block text-gray-700 hover:text-brand-primary py-2">About Us</a>
+                    <a href="../auth/login.html" class="block bg-brand-primary text-white px-6 py-3 rounded-lg hover:bg-brand-secondary text-center font-semibold mt-4">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="bg-brand-light py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
+                    Find Your Perfect Helper
+                </h1>
+                <p class="mt-3 max-w-md mx-auto text-base text-gray-600 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
+                    Browse through our verified domestic helpers and find the perfect match for your needs.
+                </p>
+            </div>
+            
+            <!-- Enhanced Search Bar -->
+            <div class="mt-8 max-w-3xl mx-auto">
+                <div class="bg-white rounded-lg shadow-lg p-4">
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="flex-1">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-search text-gray-400"></i>
+                                </div>
+                                <input type="text" 
+                                       id="search-input" 
+                                       placeholder="Search by name, skills, or location..." 
+                                       class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary">
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="search-button" 
+                                    class="bg-brand-primary text-white px-6 py-3 rounded-lg hover:bg-brand-secondary transition-colors flex items-center justify-center">
+                                <i class="fas fa-search mr-2"></i>
+                                Search
+                            </button>
+                            <button id="advanced-filters-toggle" 
+                                    class="bg-white text-brand-primary border border-brand-primary px-6 py-3 rounded-lg hover:bg-brand-light transition-colors flex items-center justify-center">
+                                <i class="fas fa-filter mr-2"></i>
+                                Filters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
+        <!-- Stats Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <div class="text-brand-primary text-3xl mb-2">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800" id="total-profiles">0</h3>
+                <p class="text-gray-600">Available Helpers</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <div class="text-brand-primary text-3xl mb-2">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800" id="avg-experience">0</h3>
+                <p class="text-gray-600">Avg. Years Experience</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <div class="text-brand-primary text-3xl mb-2">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800" id="verified-profiles">0</h3>
+                <p class="text-gray-600">Verified Profiles</p>
+            </div>
+        </div>
+
+        <!-- Advanced Filters Section (Initially Hidden) -->
+        <div id="advanced-filters" class="bg-white shadow-md rounded-lg p-6 mb-8 hidden">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-gray-900">Advanced Filters</h2>
+                <button id="clear-filters" class="text-sm text-brand-primary hover:text-brand-secondary">
+                    <i class="fas fa-times mr-1"></i> Clear Filters
+                </button>
+            </div>
+            <form id="filter-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div>
-                    <label for="city-filter" class="block text-sm font-medium text-gray-700">City</label>
-                    <input type="text" id="city-filter" name="city" placeholder="e.g. Kathmandu"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <label for="city-filter" class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-map-marker-alt text-gray-400"></i>
+                        </div>
+                        <input type="text" id="city-filter" name="city" placeholder="e.g. Kathmandu"
+                            class="pl-10 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
+                    </div>
                 </div>
                 
                 <div>
-                    <label for="working-time-filter" class="block text-sm font-medium text-gray-700">Working Time</label>
-                    <select id="working-time-filter" name="working_time"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                        <option value="">All</option>
-                        <option value="morning">Morning</option>
-                        <option value="day">Day</option>
-                        <option value="evening">Evening</option>
-                        <option value="night">Night</option>
-                        <option value="24hours">24 Hours</option>
-                    </select>
+                    <label for="working-time-filter" class="block text-sm font-medium text-gray-700 mb-1">Working Time</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-clock text-gray-400"></i>
+                        </div>
+                        <select id="working-time-filter" name="working_time"
+                            class="pl-10 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
+                            <option value="">All Times</option>
+                            <option value="morning">Morning</option>
+                            <option value="day">Day</option>
+                            <option value="evening">Evening</option>
+                            <option value="night">Night</option>
+                            <option value="24hours">24 Hours</option>
+                        </select>
+                    </div>
                 </div>
                 
                 <div>
-                    <label for="salary-range-filter" class="block text-sm font-medium text-gray-700">Salary Range</label>
-                    <select id="salary-range-filter" name="salary_range"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                        <option value="">All</option>
-                        <option value="6000-10000">6,000 - 10,000</option>
-                        <option value="10000-15000">10,000 - 15,000</option>
-                        <option value="15000-20000">15,000 - 20,000</option>
-                        <option value="20000-25000">20,000 - 25,000</option>
-                        <option value="25000-30000">25,000 - 30,000</option>
-                        <option value="30000+">30,000+</option>
-                    </select>
+                    <label for="salary-range-filter" class="block text-sm font-medium text-gray-700 mb-1">Salary Range</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-money-bill-wave text-gray-400"></i>
+                        </div>
+                        <select id="salary-range-filter" name="salary_range"
+                            class="pl-10 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
+                            <option value="">All Ranges</option>
+                            <option value="6000-10000">6,000 - 10,000 NPR</option>
+                            <option value="10000-15000">10,000 - 15,000 NPR</option>
+                            <option value="15000-20000">15,000 - 20,000 NPR</option>
+                            <option value="20000-25000">20,000 - 25,000 NPR</option>
+                            <option value="25000-30000">25,000 - 30,000 NPR</option>
+                            <option value="30000+">30,000+ NPR</option>
+                        </select>
+                    </div>
                 </div>
                 
                 <div>
-                    <label for="experience-filter" class="block text-sm font-medium text-gray-700">Minimum Experience (Years)</label>
-                    <input type="number" id="experience-filter" name="experience_min" min="0" placeholder="e.g. 2"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <label for="experience-filter" class="block text-sm font-medium text-gray-700 mb-1">Minimum Experience</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-briefcase text-gray-400"></i>
+                        </div>
+                        <input type="number" id="experience-filter" name="experience_min" min="0" placeholder="e.g. 2 years"
+                            class="pl-10 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
+                    </div>
                 </div>
                 
                 <div>
-                    <label for="services-filter" class="block text-sm font-medium text-gray-700">Services</label>
-                    <select id="services-filter" name="services" multiple
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                        <option value="cooking">Cooking</option>
-                        <option value="cleaning">Cleaning</option>
-                        <option value="babysitting">Babysitting</option>
-                        <option value="elder_care">Elder Care</option>
-                        <option value="pet_care">Pet Care</option>
-                        <option value="laundry">Laundry</option>
-                        <option value="office_help">Office Help</option>
-                        <option value="gardening">Gardening</option>
-                        <option value="shopping">Shopping</option>
-                        <option value="ironing">Ironing</option>
-                        <option value="postnatal_massage">Postnatal Oil Massage</option>
-                        <option value="sick_care">Sick Care</option>
-                    </select>
+                    <label for="services-filter" class="block text-sm font-medium text-gray-700 mb-1">Services</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-list text-gray-400"></i>
+                        </div>
+                        <select id="services-filter" name="services" multiple
+                            class="pl-10 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
+                            <option value="cooking">Cooking</option>
+                            <option value="cleaning">Cleaning</option>
+                            <option value="babysitting">Babysitting</option>
+                            <option value="elder_care">Elder Care</option>
+                            <option value="pet_care">Pet Care</option>
+                            <option value="laundry">Laundry</option>
+                            <option value="office_help">Office Help</option>
+                            <option value="gardening">Gardening</option>
+                            <option value="shopping">Shopping</option>
+                            <option value="ironing">Ironing</option>
+                            <option value="postnatal_massage">Postnatal Oil Massage</option>
+                            <option value="sick_care">Sick Care</option>
+                        </select>
+                    </div>
                 </div>
                 
                 <div class="flex items-end">
                     <button type="submit" id="apply-filters"
-                        class="w-full bg-indigo-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Apply Filters
+                        class="w-full bg-brand-primary py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-brand-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary transition duration-150 ease-in-out">
+                        <i class="fas fa-filter mr-2"></i> Apply Filters
                     </button>
                 </div>
             </form>
@@ -89,9 +277,24 @@
 
         <!-- Profiles Section -->
         <div id="profiles-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Profiles will be loaded here -->
-            <div class="text-center py-12 text-gray-500">
-                Loading profiles...
+            <!-- Loading skeleton -->
+            <div class="animate-pulse">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center">
+                            <div class="h-12 w-12 bg-gray-200 rounded-full"></div>
+                            <div class="ml-4 space-y-2">
+                                <div class="h-4 bg-gray-200 rounded w-24"></div>
+                                <div class="h-3 bg-gray-200 rounded w-32"></div>
+                            </div>
+                        </div>
+                        <div class="mt-4 space-y-2">
+                            <div class="h-3 bg-gray-200 rounded w-full"></div>
+                            <div class="h-3 bg-gray-200 rounded w-5/6"></div>
+                            <div class="h-3 bg-gray-200 rounded w-4/6"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -106,16 +309,86 @@
                 e.preventDefault();
                 loadProfiles();
             });
+
+            // Handle clear filters
+            document.getElementById('clear-filters').addEventListener('click', function() {
+                document.getElementById('filter-form').reset();
+                document.getElementById('search-input').value = '';
+                loadProfiles();
+            });
+            
+            // Handle search button click
+            document.getElementById('search-button').addEventListener('click', function() {
+                loadProfiles();
+            });
+            
+            // Handle search input enter key
+            document.getElementById('search-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    loadProfiles();
+                }
+            });
+            
+            // Toggle advanced filters
+            document.getElementById('advanced-filters-toggle').addEventListener('click', function() {
+                const advancedFilters = document.getElementById('advanced-filters');
+                if (advancedFilters.classList.contains('hidden')) {
+                    advancedFilters.classList.remove('hidden');
+                    this.innerHTML = '<i class="fas fa-times mr-2"></i> Hide Filters';
+                } else {
+                    advancedFilters.classList.add('hidden');
+                    this.innerHTML = '<i class="fas fa-filter mr-2"></i> Filters';
+                }
+            });
+
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const closeMobileMenu = document.getElementById('closeMobileMenu');
+            const mobileMenu = document.getElementById('mobileMenu');
+
+            if (mobileMenuBtn && closeMobileMenu && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileMenu.classList.remove('hidden');
+                });
+
+                closeMobileMenu.addEventListener('click', function() {
+                    mobileMenu.classList.add('hidden');
+                });
+            }
         });
         
         async function loadProfiles() {
             try {
                 // Show loading state
                 const profilesContainer = document.getElementById('profiles-container');
-                profilesContainer.innerHTML = '<div class="text-center py-12 text-gray-500">Loading profiles...</div>';
+                profilesContainer.innerHTML = `
+                    <div class="animate-pulse">
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                            <div class="p-6">
+                                <div class="flex items-center">
+                                    <div class="h-12 w-12 bg-gray-200 rounded-full"></div>
+                                    <div class="ml-4 space-y-2">
+                                        <div class="h-4 bg-gray-200 rounded w-24"></div>
+                                        <div class="h-3 bg-gray-200 rounded w-32"></div>
+                                    </div>
+                                </div>
+                                <div class="mt-4 space-y-2">
+                                    <div class="h-3 bg-gray-200 rounded w-full"></div>
+                                    <div class="h-3 bg-gray-200 rounded w-5/6"></div>
+                                    <div class="h-3 bg-gray-200 rounded w-4/6"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Get search query
+                const searchQuery = document.getElementById('search-input').value.trim();
                 
                 // Get filter values
                 const filters = {
+                    search: searchQuery,
                     city: document.getElementById('city-filter').value,
                     working_time: document.getElementById('working-time-filter').value,
                     salary_range: document.getElementById('salary-range-filter').value,
@@ -126,20 +399,50 @@
                 // Fetch profiles with filters
                 const profiles = await window.maidProfiles.fetchMaidProfiles(filters);
                 
+                // Update stats
+                updateStats(profiles);
+                
                 // Display profiles
                 displayProfiles(profiles);
             } catch (error) {
                 console.error('Error loading profiles:', error);
                 const profilesContainer = document.getElementById('profiles-container');
-                profilesContainer.innerHTML = '<div class="text-center py-12 text-red-500">Error loading profiles. Please try again.</div>';
+                profilesContainer.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <div class="text-red-500 mb-4">
+                            <i class="fas fa-exclamation-circle text-4xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900">Error Loading Profiles</h3>
+                        <p class="mt-2 text-sm text-gray-500">Please try again later.</p>
+                    </div>
+                `;
             }
+        }
+
+        function updateStats(profiles) {
+            document.getElementById('total-profiles').textContent = profiles.length;
+            
+            const totalExperience = profiles.reduce((sum, profile) => sum + (profile.experience_years || 0), 0);
+            const avgExperience = profiles.length > 0 ? (totalExperience / profiles.length).toFixed(1) : 0;
+            document.getElementById('avg-experience').textContent = avgExperience;
+            
+            const verifiedCount = profiles.filter(profile => profile.is_verified).length;
+            document.getElementById('verified-profiles').textContent = verifiedCount;
         }
         
         function displayProfiles(profiles) {
             const profilesContainer = document.getElementById('profiles-container');
             
             if (profiles.length === 0) {
-                profilesContainer.innerHTML = '<div class="text-center py-12 text-gray-500">No profiles found matching your criteria.</div>';
+                profilesContainer.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <div class="text-gray-400 mb-4">
+                            <i class="fas fa-search text-4xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900">No Profiles Found</h3>
+                        <p class="mt-2 text-sm text-gray-500">Try adjusting your filters to find more matches.</p>
+                    </div>
+                `;
                 return;
             }
             
@@ -149,7 +452,7 @@
                 // Format services as badges
                 const servicesHTML = profile.services.map(service => {
                     const serviceName = service.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                    return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-1 mb-1">${serviceName}</span>`;
+                    return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-light text-brand-primary mr-1 mb-1">${serviceName}</span>`;
                 }).join('');
                 
                 // Format languages
@@ -178,47 +481,71 @@
                 
                 // Create profile card
                 profilesHTML += `
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
-                        <div class="p-5">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:shadow-lg">
+                        <div class="p-6">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0">
                                     ${profile.image_url 
-                                        ? `<img class="h-12 w-12 rounded-full" src="${profile.image_url}" alt="${profile.full_name}">` 
-                                        : `<div class="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center">
-                                            <span class="text-gray-500 text-lg font-medium">${profile.full_name.charAt(0)}</span>
+                                        ? `<img class="h-16 w-16 rounded-full object-cover" src="${profile.image_url}" alt="${profile.full_name}">` 
+                                        : `<div class="h-16 w-16 rounded-full bg-brand-light flex items-center justify-center">
+                                            <span class="text-brand-primary text-xl font-medium">${profile.full_name.charAt(0)}</span>
                                            </div>`
                                     }
                                 </div>
-                                <div class="ml-5">
-                                    <h3 class="text-lg leading-6 font-medium text-gray-900">${profile.full_name}</h3>
-                                    <p class="text-sm text-gray-500">${profile.age} years • ${profile.experience_years} years experience</p>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-semibold text-gray-900">${profile.full_name}</h3>
+                                    <p class="text-sm text-gray-500">
+                                        <span class="inline-flex items-center">
+                                            <i class="fas fa-map-marker-alt text-gray-400 mr-1"></i>
+                                            ${profile.area}, ${profile.city}
+                                        </span>
+                                    </p>
                                 </div>
                             </div>
-                            <div class="mt-4">
-                                <p class="text-sm text-gray-500"><span class="font-medium">Location:</span> ${profile.area}, ${profile.city}</p>
-                                <p class="text-sm text-gray-500"><span class="font-medium">Working Time:</span> ${workingTime}</p>
-                                <p class="text-sm text-gray-500"><span class="font-medium">Salary Range:</span> ${salaryRange}</p>
-                                <p class="text-sm text-gray-500"><span class="font-medium">Languages:</span> ${languagesHTML}</p>
+                            
+                            <div class="mt-4 space-y-2">
+                                <div class="flex items-center text-sm text-gray-600">
+                                    <i class="fas fa-briefcase w-5 text-gray-400"></i>
+                                    <span class="ml-2">${profile.experience_years} years experience</span>
+                                </div>
+                                <div class="flex items-center text-sm text-gray-600">
+                                    <i class="fas fa-clock w-5 text-gray-400"></i>
+                                    <span class="ml-2">${workingTime}</span>
+                                </div>
+                                <div class="flex items-center text-sm text-gray-600">
+                                    <i class="fas fa-money-bill-wave w-5 text-gray-400"></i>
+                                    <span class="ml-2">${salaryRange}</span>
+                                </div>
+                                <div class="flex items-center text-sm text-gray-600">
+                                    <i class="fas fa-language w-5 text-gray-400"></i>
+                                    <span class="ml-2">${languagesHTML}</span>
+                                </div>
                             </div>
+
                             <div class="mt-4">
-                                <h4 class="text-sm font-medium text-gray-900">Services Offered:</h4>
-                                <div class="mt-2">
+                                <h4 class="text-sm font-medium text-gray-900 mb-2">Services Offered:</h4>
+                                <div class="flex flex-wrap">
                                     ${servicesHTML}
                                 </div>
                             </div>
+                            
                             ${profile.additional_info ? `
                                 <div class="mt-4">
-                                    <h4 class="text-sm font-medium text-gray-900">Additional Information:</h4>
-                                    <p class="mt-1 text-sm text-gray-500">${profile.additional_info}</p>
+                                    <h4 class="text-sm font-medium text-gray-900 mb-1">Additional Information:</h4>
+                                    <p class="text-sm text-gray-500">${profile.additional_info}</p>
                                 </div>
                             ` : ''}
                         </div>
-                        <div class="bg-gray-50 px-5 py-3">
-                            <div class="text-sm">
-                                <a href="view-profile.html?id=${profile.id}" class="font-medium text-indigo-600 hover:text-indigo-500">
-                                    View Profile
+                        
+                        <div class="bg-gray-50 px-6 py-4 border-t border-gray-100">
+                            <div class="flex justify-center">
+                                <a href="view-profile.html?id=${profile.id}" 
+                                   class="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-brand-primary hover:bg-brand-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary transition duration-150 ease-in-out">
+                                    <span>View Full Profile</span>
+                                    <i class="fas fa-arrow-right ml-2"></i>
                                 </a>
                             </div>
+                            <p class="text-xs text-center text-gray-500 mt-2">Contact information available after viewing profile</p>
                         </div>
                     </div>
                 `;

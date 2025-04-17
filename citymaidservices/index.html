@@ -80,8 +80,6 @@
                 <!-- Desktop menu -->
                 <div class="hidden md:flex items-center space-x-6">
                     <a href="index.html" class="text-brand-primary font-semibold">Home</a>
-                    <a href="jobs/find-maids.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Find Maids</a>
-                    <a href="jobs/find-jobs.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Find Jobs</a>
                     <a href="static/contact.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Contact Us</a>
                     <a href="static/about.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">About Us</a>
                     <a href="auth/login.html" class="bg-brand-primary text-white px-6 py-3 rounded-lg hover:bg-brand-secondary font-semibold transition-colors">Sign In</a>
@@ -107,8 +105,6 @@
                 </div>
                 <div class="p-4 space-y-4">
                     <a href="index.html" class="block text-brand-primary font-semibold py-2">Home</a>
-                    <a href="jobs/find-maids.html" class="block text-gray-700 hover:text-brand-primary py-2">Find Maids</a>
-                    <a href="jobs/find-jobs.html" class="block text-gray-700 hover:text-brand-primary py-2">Find Jobs</a>
                     <a href="static/contact.html" class="block text-gray-700 hover:text-brand-primary py-2">Contact Us</a>
                     <a href="static/about.html" class="block text-gray-700 hover:text-brand-primary py-2">About Us</a>
                     <a href="auth/login.html" class="block bg-brand-primary text-white px-6 py-3 rounded-lg hover:bg-brand-secondary text-center font-semibold mt-4">Sign In</a>
@@ -130,9 +126,6 @@
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
                     <a href="auth/register.html" class="bg-brand-primary text-white px-8 py-4 rounded-lg hover:bg-brand-secondary transition-colors text-center font-semibold">
                         <i class="fas fa-user-plus mr-2"></i>Create Profile
-                    </a>
-                    <a href="auth/register.html" class="bg-white text-brand-primary px-8 py-4 rounded-lg hover:bg-gray-50 transition-colors text-center font-semibold border-2 border-brand-primary">
-                        <i class="fas fa-plus mr-2"></i>Post a Job
                     </a>
                 </div>
             </div>
@@ -157,7 +150,7 @@
                 </div>
             </div>
             <div class="text-center mt-8">
-                <a href="jobs/find-maids.html" class="inline-block bg-brand-primary text-white px-8 py-3 rounded-lg hover:bg-brand-secondary transition-colors">
+                <a href="#latestMaidsContainer" class="inline-block bg-brand-primary text-white px-8 py-3 rounded-lg hover:bg-brand-secondary transition-colors">
                     Browse All Profiles <i class="fas fa-arrow-right ml-2"></i>
                 </a>
             </div>
@@ -238,7 +231,6 @@
                     <h3 class="text-xl font-bold mb-4">Quick Links</h3>
                     <ul class="space-y-2">
                         <li><a href="index.html" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
-                        <li><a href="jobs/find-maids.html" class="text-gray-400 hover:text-white transition-colors">Find Maids</a></li>
                         <li><a href="jobs/find-jobs.html" class="text-gray-400 hover:text-white transition-colors">Find Jobs</a></li>
                         <li><a href="static/about.html" class="text-gray-400 hover:text-white transition-colors">About Us</a></li>
                     </ul>
@@ -302,9 +294,11 @@
         // Fetch and display latest maid profiles
         async function fetchLatestMaids() {
             try {
+                console.log('Starting to fetch maid profiles...');
                 const latestMaidsContainer = document.getElementById('latestMaidsContainer');
                 
                 // Fetch maid profiles from Supabase
+                console.log('Making Supabase query...');
                 const { data: maidProfiles, error } = await supabaseClient
                     .from('maid_profiles')
                     .select('*')
@@ -316,10 +310,13 @@
                     throw error;
                 }
                 
+                console.log('Fetched maid profiles:', maidProfiles);
+                
                 // Clear loading placeholder
                 latestMaidsContainer.innerHTML = '';
                 
                 if (!maidProfiles || maidProfiles.length === 0) {
+                    console.log('No maid profiles found');
                     latestMaidsContainer.innerHTML = `
                         <div class="col-span-full text-center py-8">
                             <p class="text-gray-500">No maid profiles available at the moment.</p>
@@ -330,10 +327,14 @@
                 
                 // Display maid profiles
                 maidProfiles.forEach(maid => {
+                    console.log('Processing maid profile:', maid);
+                    
                     // Format skills for display
                     const skillsDisplay = maid.skills && maid.skills.length > 0 
                         ? maid.skills.slice(0, 3).join(', ') 
                         : 'Not specified';
+                    
+                    console.log('Formatted skills:', skillsDisplay);
                     
                     // Calculate age from date of birth
                     let age = 'Not specified';
@@ -345,14 +346,31 @@
                         if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
                             age--;
                         }
+                        console.log('Calculated age:', age);
                     }
                     
                     // Create maid profile card
                     const maidCard = document.createElement('div');
                     maidCard.className = 'bg-white rounded-lg overflow-hidden card-shadow';
+                    
+                    // Log the data being used in the template
+                    console.log('Profile image URL:', maid.profile_image_url);
+                    console.log('Work type:', maid.work_type);
+                    console.log('Full name:', maid.full_name);
+                    console.log('Years of experience:', maid.years_of_experience);
+                    console.log('Previous experience:', maid.previous_experience);
+                    console.log('Expected salary:', maid.expected_salary);
+                    
+                    // Handle profile image with error handling
+                    const profileImage = maid.profile_image_url || 'images/default-profile.jpg';
+                    console.log('Using profile image:', profileImage);
+                    
                     maidCard.innerHTML = `
                         <div class="relative">
-                            <img src="${maid.profile_image_url || 'images/default-profile.jpg'}" alt="${maid.full_name}" class="w-full h-64 object-cover">
+                            <img src="${profileImage}" 
+                                 alt="${maid.full_name}" 
+                                 class="w-full h-64 object-cover"
+                                 onerror="this.onerror=null; this.src='images/default-profile.jpg';">
                             <div class="absolute top-4 right-4">
                                 <span class="badge">${maid.work_type || 'Not specified'}</span>
                             </div>
@@ -376,7 +394,7 @@
                     latestMaidsContainer.appendChild(maidCard);
                 });
             } catch (error) {
-                console.error('Error fetching maid profiles:', error);
+                console.error('Error in fetchLatestMaids:', error);
                 document.getElementById('latestMaidsContainer').innerHTML = `
                     <div class="col-span-full text-center py-8">
                         <p class="text-red-500">Failed to load maid profiles. Please try again later.</p>
@@ -388,9 +406,11 @@
         // Fetch and display latest jobs
         async function fetchLatestJobs() {
             try {
+                console.log('Starting to fetch jobs...');
                 const latestJobsContainer = document.getElementById('latestJobsContainer');
                 
                 // Fetch jobs from Supabase
+                console.log('Making Supabase query for jobs...');
                 const { data: jobs, error } = await supabaseClient
                     .from('jobs')
                     .select('*')
@@ -398,12 +418,18 @@
                     .order('created_at', { ascending: false })
                     .limit(6);
                 
-                if (error) throw error;
+                if (error) {
+                    console.error('Error fetching jobs:', error);
+                    throw error;
+                }
+                
+                console.log('Fetched jobs:', jobs);
                 
                 // Clear loading placeholder
                 latestJobsContainer.innerHTML = '';
                 
-                if (jobs.length === 0) {
+                if (!jobs || jobs.length === 0) {
+                    console.log('No jobs found');
                     latestJobsContainer.innerHTML = `
                         <div class="col-span-full text-center py-8">
                             <p class="text-gray-500">No job opportunities available at the moment.</p>
@@ -414,14 +440,25 @@
                 
                 // Display jobs
                 jobs.forEach(job => {
+                    console.log('Processing job:', job);
+                    
                     // Format required skills for display
                     const skillsDisplay = job.required_skills && job.required_skills.length > 0 
                         ? job.required_skills.slice(0, 3).join(', ') 
                         : 'Not specified';
                     
+                    console.log('Formatted job skills:', skillsDisplay);
+                    
                     // Create job card
                     const jobCard = document.createElement('div');
                     jobCard.className = 'bg-white rounded-lg overflow-hidden card-shadow';
+                    
+                    // Log the data being used in the template
+                    console.log('Job title:', job.title);
+                    console.log('Work type:', job.work_type);
+                    console.log('Description:', job.description);
+                    console.log('Salary:', job.salary);
+                    
                     jobCard.innerHTML = `
                         <div class="p-6">
                             <div class="flex justify-between items-start mb-4">
@@ -444,7 +481,7 @@
                     latestJobsContainer.appendChild(jobCard);
                 });
             } catch (error) {
-                console.error('Error fetching jobs:', error);
+                console.error('Error in fetchLatestJobs:', error);
                 document.getElementById('latestJobsContainer').innerHTML = `
                     <div class="col-span-full text-center py-8">
                         <p class="text-red-500">Failed to load job opportunities. Please try again later.</p>

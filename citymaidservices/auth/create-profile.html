@@ -487,21 +487,43 @@
 
                 console.log('Creating maid profile for user:', session.user.id);
 
-                // Handle image upload if provided
+                // Handle image upload
                 let profileImageUrl = null;
-                const imageFile = document.getElementById('maid-image').files[0];
+                const imageFile = imageInput.files[0];
                 if (imageFile) {
-                    console.log('Image file selected:', imageFile.name);
                     try {
-                        // Validate file size (2MB limit)
-                        if (imageFile.size > 2 * 1024 * 1024) {
-                            throw new Error('Image size must be less than 2MB');
-                        }
-
                         // Validate file type
                         const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
                         if (!validTypes.includes(imageFile.type)) {
                             throw new Error('Only JPG, JPEG, and PNG images are allowed');
+                        }
+
+                        // Check if bucket exists, create if it doesn't
+                        console.log('Checking storage bucket...');
+                        const { data: buckets, error: bucketsError } = await window.supabase
+                            .storage
+                            .listBuckets();
+
+                        if (bucketsError) {
+                            console.error('Error listing buckets:', bucketsError);
+                            throw new Error('Failed to check storage buckets');
+                        }
+
+                        const bucketExists = buckets.some(bucket => bucket.name === 'maid_profile_images');
+                        if (!bucketExists) {
+                            console.log('Creating maid_profile_images bucket...');
+                            const { data: newBucket, error: createBucketError } = await window.supabase
+                                .storage
+                                .createBucket('maid_profile_images', {
+                                    public: true,
+                                    fileSizeLimit: 2097152 // 2MB in bytes
+                                });
+
+                            if (createBucketError) {
+                                console.error('Error creating bucket:', createBucketError);
+                                throw new Error('Failed to create storage bucket');
+                            }
+                            console.log('Bucket created successfully');
                         }
 
                         const fileExt = imageFile.name.split('.').pop();
@@ -511,7 +533,7 @@
                         
                         // Upload to Supabase storage
                         const { data: uploadData, error: uploadError } = await window.supabase.storage
-                            .from('profile-images')
+                            .from('maid_profile_images')
                             .upload(fileName, imageFile, {
                                 cacheControl: '3600',
                                 upsert: false
@@ -519,14 +541,20 @@
 
                         if (uploadError) {
                             console.error('Image upload error:', uploadError);
-                            throw uploadError;
+                            if (uploadError.message.includes('does not exist')) {
+                                throw new Error('Storage bucket not found. Please contact support.');
+                            } else if (uploadError.message.includes('quota')) {
+                                throw new Error('Storage quota exceeded. Please try a smaller image.');
+                            } else {
+                                throw uploadError;
+                            }
                         }
 
                         console.log('Image uploaded successfully:', uploadData);
                         
                         // Get public URL
                         const { data: { publicUrl } } = window.supabase.storage
-                            .from('profile-images')
+                            .from('maid_profile_images')
                             .getPublicUrl(fileName);
                         
                         profileImageUrl = publicUrl;
