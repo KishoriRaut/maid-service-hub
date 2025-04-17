@@ -295,8 +295,8 @@
         document.getElementById('currentYear').textContent = new Date().getFullYear();
 
         // Initialize Supabase client
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const SUPABASE_URL = 'https://fdgqqxyyofjnkhswkwcq.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkZ3FxeHl5b2Zqbmtoc3drd2NxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwMjQyMTMsImV4cCI6MjA1OTYwMDIxM30.YyJLLu3r2a7Mh7ny0ie-YzzLfPh5PdrJJHnBFBxWqVE';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Fetch and display latest maid profiles
@@ -308,16 +308,18 @@
                 const { data: maidProfiles, error } = await supabaseClient
                     .from('maid_profiles')
                     .select('*')
-                    .eq('is_active', true)
                     .order('created_at', { ascending: false })
                     .limit(6);
                 
-                if (error) throw error;
+                if (error) {
+                    console.error('Error fetching maid profiles:', error);
+                    throw error;
+                }
                 
                 // Clear loading placeholder
                 latestMaidsContainer.innerHTML = '';
                 
-                if (maidProfiles.length === 0) {
+                if (!maidProfiles || maidProfiles.length === 0) {
                     latestMaidsContainer.innerHTML = `
                         <div class="col-span-full text-center py-8">
                             <p class="text-gray-500">No maid profiles available at the moment.</p>
@@ -350,7 +352,7 @@
                     maidCard.className = 'bg-white rounded-lg overflow-hidden card-shadow';
                     maidCard.innerHTML = `
                         <div class="relative">
-                            <img src="${maid.profile_photo || 'images/default-profile.jpg'}" alt="${maid.full_name}" class="w-full h-64 object-cover">
+                            <img src="${maid.profile_image_url || 'images/default-profile.jpg'}" alt="${maid.full_name}" class="w-full h-64 object-cover">
                             <div class="absolute top-4 right-4">
                                 <span class="badge">${maid.work_type || 'Not specified'}</span>
                             </div>

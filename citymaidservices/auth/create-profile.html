@@ -6,6 +6,7 @@
     <title>Create Profile - City Maid Services</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-config.js"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center py-8">
     <div class="max-w-md w-full mx-4">
@@ -264,11 +265,6 @@
     </div>
 
     <script>
-        // Initialize Supabase
-        const supabaseUrl = 'https://fdgqqxyyofjnkhswkwcq.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkZ3FxeHl5b2Zqbmtoc3drd2NxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwMjQyMTMsImV4cCI6MjA1OTYwMDIxM30.YyJLLu3r2a7Mh7ny0ie-YzzLfPh5PdrJJHnBFBxWqVE';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
         // Get elements
         const employerProfileForm = document.getElementById('employer-profile-form');
         const maidProfileForm = document.getElementById('maid-profile-form');
@@ -284,8 +280,11 @@
 
         // Function to show error message
         function showError(message) {
+            console.error('Error:', message);
             errorText.textContent = message;
             errorMessage.classList.remove('hidden');
+            // Scroll to error message
+            errorMessage.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         // Handle character count for additional info
@@ -309,28 +308,42 @@
 
         // Check if user is logged in and has selected a role
         async function checkSession() {
-            const { data: { session }, error } = await supabase.auth.getSession();
-            if (error || !session) {
-                window.location.href = 'login.html';
-                return;
-            }
+            try {
+                const { data: { session }, error } = await window.supabase.auth.getSession();
+                if (error) {
+                    console.error('Session error:', error);
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                if (!session) {
+                    console.log('No session found, redirecting to login');
+                    window.location.href = 'login.html';
+                    return;
+                }
 
-            const selectedRole = sessionStorage.getItem('selectedRole');
-            if (!selectedRole) {
-                window.location.href = 'select-role.html';
-                return;
-            }
+                const selectedRole = sessionStorage.getItem('selectedRole');
+                if (!selectedRole) {
+                    console.log('No role selected, redirecting to role selection');
+                    window.location.href = 'select-role.html';
+                    return;
+                }
 
-            // Show the appropriate form based on role
-            if (selectedRole === 'employer') {
-                employerProfileForm.classList.remove('hidden');
-                maidProfileForm.classList.add('hidden');
-            } else if (selectedRole === 'maid') {
-                employerProfileForm.classList.add('hidden');
-                maidProfileForm.classList.remove('hidden');
-            }
+                // Show the appropriate form based on role
+                if (selectedRole === 'employer') {
+                    employerProfileForm.classList.remove('hidden');
+                    maidProfileForm.classList.add('hidden');
+                } else if (selectedRole === 'maid') {
+                    employerProfileForm.classList.add('hidden');
+                    maidProfileForm.classList.remove('hidden');
+                }
 
-            return { session, selectedRole };
+                return { session, selectedRole };
+            } catch (error) {
+                console.error('Error in checkSession:', error);
+                showError('Error checking session: ' + error.message);
+                return null;
+            }
         }
 
         // Handle employer profile form submission
@@ -339,7 +352,10 @@
 
             try {
                 // Get session and role
-                const { session, selectedRole } = await checkSession();
+                const sessionData = await checkSession();
+                if (!sessionData) return;
+                
+                const { session, selectedRole } = sessionData;
                 if (!session || !selectedRole) return;
 
                 // Get form values
@@ -357,8 +373,10 @@
                 employerSubmitButton.disabled = true;
                 employerSubmitButton.textContent = 'Creating Profile...';
 
+                console.log('Creating employer profile for user:', session.user.id);
+
                 // Create employer profile
-                const { error } = await supabase
+                const { data, error } = await window.supabase
                     .from('employer_profiles')
                     .insert([
                         {
@@ -369,7 +387,12 @@
                         }
                     ]);
 
-                if (error) throw error;
+                if (error) {
+                    console.error('Error creating employer profile:', error);
+                    throw error;
+                }
+
+                console.log('Employer profile created successfully:', data);
 
                 // Clear role from session storage
                 sessionStorage.removeItem('selectedRole');
@@ -378,7 +401,7 @@
                 window.location.href = '../employer/dashboard.html';
             } catch (error) {
                 console.error('Error creating employer profile:', error);
-                showError(error.message);
+                showError(error.message || 'Failed to create employer profile');
                 
                 // Reset submit button
                 employerSubmitButton.disabled = false;
@@ -389,12 +412,28 @@
         // Handle maid profile form submission
         maidProfileForm.addEventListener('submit', async function(e) {
             e.preventDefault();
+            console.log('Starting maid profile submission...');
 
             try {
                 // Get session and role
-                const { session, selectedRole } = await checkSession();
-                if (!session || !selectedRole) return;
+                console.log('Checking session...');
+                const sessionData = await checkSession();
+                console.log('Session data:', sessionData);
+                
+                if (!sessionData) {
+                    console.error('No session data found');
+                    showError('Please log in to create a profile');
+                    return;
+                }
+                
+                const { session, selectedRole } = sessionData;
+                if (!session || !selectedRole) {
+                    console.error('Missing session or role:', { session, selectedRole });
+                    showError('Please select a role and log in');
+                    return;
+                }
 
+                console.log('Getting form values...');
                 // Get form values
                 const fullName = document.getElementById('maid-full-name').value.trim();
                 const email = document.getElementById('maid-email').value.trim();
@@ -410,13 +449,34 @@
                 const experienceYears = document.getElementById('maid-experience').value.trim();
                 const additionalInfo = document.getElementById('maid-additional-info').value.trim();
 
+                console.log('Form values collected:', {
+                    fullName, email, phone, age, gender, religion, languages,
+                    city, area, workingTime, salaryRange, experienceYears
+                });
+
                 // Get selected services
                 const serviceCheckboxes = document.querySelectorAll('input[name="services"]:checked');
                 const services = Array.from(serviceCheckboxes).map(checkbox => checkbox.value);
+                console.log('Selected services:', services);
 
                 // Validate required fields
                 if (!fullName || !email || !phone || !age || !gender || !religion || !languages ||
                     !city || !area || !workingTime || !salaryRange || !experienceYears || services.length === 0) {
+                    console.error('Validation failed:', {
+                        fullName: !!fullName,
+                        email: !!email,
+                        phone: !!phone,
+                        age: !!age,
+                        gender: !!gender,
+                        religion: !!religion,
+                        languages: !!languages,
+                        city: !!city,
+                        area: !!area,
+                        workingTime: !!workingTime,
+                        salaryRange: !!salaryRange,
+                        experienceYears: !!experienceYears,
+                        services: services.length
+                    });
                     showError('Please fill in all required fields and select at least one service');
                     return;
                 }
@@ -425,10 +485,13 @@
                 maidSubmitButton.disabled = true;
                 maidSubmitButton.textContent = 'Creating Profile...';
 
+                console.log('Creating maid profile for user:', session.user.id);
+
                 // Handle image upload if provided
-                let imageUrl = null;
-                const imageFile = imageInput.files[0];
+                let profileImageUrl = null;
+                const imageFile = document.getElementById('maid-image').files[0];
                 if (imageFile) {
+                    console.log('Image file selected:', imageFile.name);
                     try {
                         // Validate file size (2MB limit)
                         if (imageFile.size > 2 * 1024 * 1024) {
@@ -444,73 +507,122 @@
                         const fileExt = imageFile.name.split('.').pop();
                         const fileName = `${session.user.id}/${Date.now()}.${fileExt}`;
                         
-                        // Upload to the new bucket
-                        const { data: uploadData, error: uploadError } = await supabase.storage
-                            .from('maid_profile_images')
+                        console.log('Uploading image to storage:', fileName);
+                        
+                        // Upload to Supabase storage
+                        const { data: uploadData, error: uploadError } = await window.supabase.storage
+                            .from('profile-images')
                             .upload(fileName, imageFile, {
                                 cacheControl: '3600',
                                 upsert: false
                             });
-                        
-                        if (uploadError) throw uploadError;
+
+                        if (uploadError) {
+                            console.error('Image upload error:', uploadError);
+                            throw uploadError;
+                        }
+
+                        console.log('Image uploaded successfully:', uploadData);
                         
                         // Get public URL
-                        const { data: { publicUrl } } = supabase.storage
-                            .from('maid_profile_images')
+                        const { data: { publicUrl } } = window.supabase.storage
+                            .from('profile-images')
                             .getPublicUrl(fileName);
                         
-                        imageUrl = publicUrl;
+                        profileImageUrl = publicUrl;
+                        console.log('Image public URL:', profileImageUrl);
                     } catch (error) {
                         console.error('Error uploading image:', error);
-                        showError(error.message);
+                        showError(error.message || 'Error uploading image. Please try again.');
                         return;
                     }
                 }
 
                 // Create maid profile
-                const { error } = await supabase
-                    .from('maid_profiles')
-                    .insert([
-                        {
-                            user_id: session.user.id,
-                            full_name: fullName,
-                            email: email,
-                            phone: phone,
-                            age: parseInt(age),
-                            gender: gender,
-                            religion: religion,
-                            languages: languages.split(',').map(lang => lang.trim()),
-                            address: area, // Using area as address for now
-                            city: city,
-                            area: area,
-                            working_time: workingTime,
-                            salary_range: salaryRange,
-                            experience_years: parseInt(experienceYears),
-                            services: services,
-                            image_url: imageUrl,
-                            additional_info: additionalInfo || null
-                        }
-                    ]);
+                console.log('Creating maid profile in database...');
+                const profileData = {
+                    user_id: session.user.id,
+                    full_name: fullName,
+                    email: email,
+                    phone: phone,
+                    age: parseInt(age),
+                    gender: gender,
+                    religion: religion,
+                    languages: languages.split(',').map(lang => lang.trim()),
+                    city: city,
+                    area: area,
+                    working_time: workingTime,
+                    salary_range: salaryRange,
+                    experience_years: parseInt(experienceYears),
+                    services: services,
+                    additional_info: additionalInfo,
+                    profile_image_url: profileImageUrl
+                };
+                console.log('Profile data to insert:', profileData);
 
-                if (error) throw error;
+                const { data: insertedProfile, error: profileError } = await window.supabase
+                    .from('maid_profiles')
+                    .insert([profileData])
+                    .select();
+
+                if (profileError) {
+                    console.error('Profile creation error:', profileError);
+                    console.error('Error details:', {
+                        code: profileError.code,
+                        message: profileError.message,
+                        details: profileError.details,
+                        hint: profileError.hint
+                    });
+                    throw profileError;
+                }
+
+                console.log('Profile created successfully:', insertedProfile);
 
                 // Clear role from session storage
                 sessionStorage.removeItem('selectedRole');
 
-                // Redirect to maid dashboard
-                window.location.href = '../maid/dashboard.html';
-            } catch (error) {
-                console.error('Error creating maid profile:', error);
-                showError(error.message);
+                // Store user role in session storage for dashboard
+                sessionStorage.setItem('userRole', 'maid');
+
+                // Redirect to maid dashboard with correct path
+                console.log('Redirecting to maid dashboard...');
+                const dashboardPath = '../dashboard/maid-dashboard.html';
+                console.log('Dashboard path:', dashboardPath);
                 
-                // Reset submit button
+                try {
+                    window.location.href = dashboardPath;
+                } catch (redirectError) {
+                    console.error('Redirect error:', redirectError);
+                    // Fallback path if needed
+                    window.location.href = '../../dashboard/maid-dashboard.html';
+                }
+            } catch (error) {
+                console.error('Error in profile creation process:', error);
+                let errorMessage = 'An error occurred while creating your profile. ';
+                
+                if (error.code === '23505') {
+                    errorMessage += 'A profile already exists for this user.';
+                } else if (error.code === '23503') {
+                    errorMessage += 'Invalid user ID. Please log in again.';
+                } else if (error.message) {
+                    errorMessage += error.message;
+                } else {
+                    errorMessage += 'Please try again.';
+                }
+                
+                showError(errorMessage);
+            } finally {
+                // Re-enable submit button
                 maidSubmitButton.disabled = false;
-                maidSubmitButton.textContent = 'Create Maid Profile';
+                maidSubmitButton.textContent = 'Create Profile';
             }
         });
 
         // Check session on page load
-        checkSession();
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('Page loaded, checking session...');
+            await checkSession();
+        });
     </script>
 </body>
 </html> 
