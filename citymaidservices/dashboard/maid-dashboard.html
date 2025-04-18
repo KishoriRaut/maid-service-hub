@@ -190,14 +190,8 @@
                     .single();
 
                 if (profileError) {
-                    console.error('Error fetching profile:', profileError);
-                    document.getElementById('userName').textContent = 'Error loading profile';
-                    return;
-                }
-
-                if (!profile) {
-                    console.error('No profile found');
-                    window.location.href = '../auth/create-profile.html';
+                    // Profile not found, redirect to profile creation
+                    window.location.href = '../auth/maid-profile-form.html';
                     return;
                 }
 
