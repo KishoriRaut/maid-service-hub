@@ -6,6 +6,7 @@
     <title>Select Role - City Maid Services</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="../supabase/config.js"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
     <div class="max-w-md w-full mx-4">
@@ -38,25 +39,40 @@
     </div>
 
     <script>
-        // Initialize Supabase
-        const supabaseUrl = 'https://fdgqqxyyofjnkhswkwcq.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkZ3FxeHl5b2Zqbmtoc3drd2NxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwMjQyMTMsImV4cCI6MjA1OTYwMDIxM30.YyJLLu3r2a7Mh7ny0ie-YzzLfPh5PdrJJHnBFBxWqVE';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
         // Get elements
         const employerButton = document.getElementById('employer-button');
         const maidButton = document.getElementById('maid-button');
         const errorMessage = document.getElementById('error-message');
         const errorText = document.getElementById('error-text');
 
+        // Function to show error message
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+
         // Check if user is logged in
         async function checkSession() {
-            const { data: { session }, error } = await supabase.auth.getSession();
-            if (error || !session) {
+            try {
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                if (error) {
+                    console.error('Session error:', error);
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                if (!session) {
+                    console.log('No session found, redirecting to login');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                return session;
+            } catch (error) {
+                console.error('Error checking session:', error);
                 window.location.href = 'login.html';
                 return;
             }
-            return session;
         }
 
         // Handle role selection
@@ -75,12 +91,25 @@
                 // Store role in session storage
                 sessionStorage.setItem('selectedRole', role);
 
+                // Update user metadata with role
+                const { error: updateError } = await supabaseClient.auth.updateUser({
+                    data: { role: role }
+                });
+
+                if (updateError) {
+                    console.error('Error updating user role:', updateError);
+                    throw updateError;
+                }
+
                 // Redirect to profile creation
-                window.location.href = 'create-profile.html';
+                if (role === 'maid') {
+                    window.location.href = 'register-maid-service-provider.html';
+                } else {
+                    window.location.href = 'create-profile.html';
+                }
             } catch (error) {
                 console.error('Error selecting role:', error);
-                errorText.textContent = error.message;
-                errorMessage.classList.remove('hidden');
+                showError(error.message || 'An error occurred. Please try again.');
                 
                 // Reset buttons
                 employerButton.disabled = false;
@@ -95,7 +124,10 @@
         maidButton.addEventListener('click', () => selectRole('maid'));
 
         // Check session on page load
-        checkSession();
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('Page loaded, checking session...');
+            await checkSession();
+        });
     </script>
 </body>
 </html> 

@@ -6,6 +6,7 @@
     <title>Select Role - City Maid Services</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2.39.7"></script>
+    <script src="../supabase/config.js"></script>
     <style>
         .page-loading {
             position: fixed;
@@ -79,11 +80,6 @@
     </div>
 
     <script>
-        // Initialize Supabase client
-        const supabaseUrl = 'https://fdgqqxyyofjnkhswkwcq.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkZ3FxeHl5b2Zqbmtoc3drd2NxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwMjQyMTMsImV4cCI6MjA1OTYwMDIxM30.YyJLLu3r2a7Mh7ny0ie-YzzLfPh5PdrJJHnBFBxWqVE';
-        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-
         // Simple function to show errors
         function showError(message) {
             const errorDiv = document.getElementById('errorMessage');
@@ -165,9 +161,11 @@
                 localStorage.setItem('userType', selectedRole.value);
 
                 // Redirect to appropriate profile setup page
-                window.location.href = selectedRole.value === 'maid' ? 
-                    '../maid/setup-profile.html' : 
-                    '../employer/setup-profile.html';
+                if (selectedRole.value === 'maid') {
+                    window.location.href = '../maid/setup-profile.html';
+                } else {
+                    window.location.href = '../employer/setup-profile.html';
+                }
             } catch (error) {
                 console.error('Role selection error:', error);
                 showError(error.message || 'An error occurred. Please try again.');

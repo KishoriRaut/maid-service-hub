@@ -6,6 +6,7 @@
     <title>Maid Profile Setup - City Maid Services</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="../supabase/config.js"></script>
 </head>
 <body class="bg-gray-100">
     <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -76,16 +77,12 @@
     </div>
 
     <script>
-        // Initialize Supabase client
-        const supabaseUrl = 'https://fdgqqxyyofjnkhswkwcq.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkZ3FxeHl5b2Zqbmtoc3drd2NxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwMjQyMTMsImV4cCI6MjA1OTYwMDIxM30.YyJLLu3r2a7Mh7ny0ie-YzzLfPh5PdrJJHnBFBxWqVE';
-        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-
         // Simple function to show errors
         function showError(message) {
             const errorDiv = document.getElementById('errorMessage');
             errorDiv.textContent = message;
             errorDiv.classList.remove('hidden');
+            document.getElementById('successMessage').classList.add('hidden');
         }
 
         // Simple function to show success
@@ -93,13 +90,17 @@
             const successDiv = document.getElementById('successMessage');
             successDiv.textContent = message;
             successDiv.classList.remove('hidden');
+            document.getElementById('errorMessage').classList.add('hidden');
         }
 
         // Wait for the page to load
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if user is logged in and is a maid
-            supabaseClient.auth.getUser().then(({ data: { user }, error }) => {
-                if (error || !user) {
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Check if user is logged in and is a maid
+                const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+                
+                if (userError) throw userError;
+                if (!user) {
                     window.location.href = '../auth/login.html';
                     return;
                 }
@@ -110,58 +111,79 @@
                     return;
                 }
 
-                // Pre-fill form with existing data from user metadata
-                const metadata = user.user_metadata || {};
-                document.getElementById('fullName').value = metadata.full_name || '';
-                document.getElementById('phone').value = metadata.phone || '';
-                document.getElementById('address').value = metadata.address || '';
-                document.getElementById('experience').value = metadata.experience_years || '';
-                document.getElementById('skills').value = metadata.skills || '';
-                document.getElementById('availability').value = metadata.availability || '';
-                document.getElementById('rate').value = metadata.hourly_rate || '';
-            });
+                // Check if profile already exists
+                const { data: existingProfile, error: profileError } = await supabaseClient
+                    .from('profiles')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .single();
 
-            // Handle form submission
-            document.getElementById('setupForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                try {
-                    // Get current user
-                    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-                    if (userError) throw userError;
+                if (profileError && profileError.code !== 'PGRST116') {
+                    throw profileError;
+                }
+
+                if (existingProfile) {
+                    // Pre-fill form with existing profile data
+                    document.getElementById('fullName').value = existingProfile.full_name || '';
+                    document.getElementById('phone').value = existingProfile.phone || '';
+                    document.getElementById('address').value = existingProfile.address || '';
+                    document.getElementById('experience').value = existingProfile.experience_years || '';
+                    document.getElementById('skills').value = existingProfile.skills?.join(', ') || '';
+                    document.getElementById('availability').value = existingProfile.availability || '';
+                    document.getElementById('rate').value = existingProfile.hourly_rate || '';
+                } else {
+                    // Pre-fill form with user metadata
+                    const metadata = user.user_metadata || {};
+                    document.getElementById('fullName').value = metadata.full_name || '';
+                    document.getElementById('phone').value = metadata.phone || '';
+                    document.getElementById('address').value = metadata.address || '';
+                    document.getElementById('experience').value = metadata.experience_years || '';
+                    document.getElementById('skills').value = metadata.skills || '';
+                    document.getElementById('availability').value = metadata.availability || '';
+                    document.getElementById('rate').value = metadata.hourly_rate || '';
+                }
+
+                // Handle form submission
+                document.getElementById('setupForm').addEventListener('submit', async function(e) {
+                    e.preventDefault();
                     
-                    if (!user) {
-                        window.location.href = '../auth/login.html';
-                        return;
-                    }
-
-                    // Store all profile data in user metadata
-                    const { error: metadataError } = await supabaseClient.auth.updateUser({
-                        data: {
+                    try {
+                        // Get form data
+                        const formData = {
+                            user_id: user.id,
                             full_name: document.getElementById('fullName').value,
                             phone: document.getElementById('phone').value,
                             address: document.getElementById('address').value,
-                            experience_years: document.getElementById('experience').value,
-                            skills: document.getElementById('skills').value,
+                            experience_years: parseInt(document.getElementById('experience').value),
+                            skills: document.getElementById('skills').value.split(',').map(skill => skill.trim()),
                             availability: document.getElementById('availability').value,
-                            hourly_rate: document.getElementById('rate').value,
-                            role: 'maid'
-                        }
-                    });
+                            hourly_rate: parseFloat(document.getElementById('rate').value)
+                        };
 
-                    if (metadataError) throw metadataError;
+                        // Insert or update profile
+                        const { error: upsertError } = await supabaseClient
+                            .from('profiles')
+                            .upsert([formData], {
+                                onConflict: 'user_id'
+                            });
 
-                    showSuccess('Profile updated successfully!');
+                        if (upsertError) throw upsertError;
 
-                    // Redirect to maid dashboard after a short delay
-                    setTimeout(() => {
-                        window.location.href = 'dashboard.html';
-                    }, 1500);
-                } catch (error) {
-                    console.error('Setup error:', error);
-                    showError(error.message || 'An error occurred during setup. Please try again.');
-                }
-            });
+                        showSuccess('Profile updated successfully!');
+
+                        // Redirect to maid dashboard after a short delay
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html';
+                        }, 1500);
+                    } catch (error) {
+                        console.error('Setup error:', error);
+                        showError(error.message || 'An error occurred during setup. Please try again.');
+                    }
+                });
+            } catch (error) {
+                console.error('Initialization error:', error);
+                showError(error.message || 'An error occurred while loading the page. Please try again.');
+            }
         });
     </script>
 </body>

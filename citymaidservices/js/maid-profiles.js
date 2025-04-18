@@ -160,19 +160,30 @@ async function uploadProfileImage(imageFile, userId) {
     try {
         const fileExt = imageFile.name.split('.').pop();
         const fileName = `${userId}-${Math.random()}.${fileExt}`;
+        const bucketName = 'maid-images';
         
+        // Upload the file to the existing bucket
         const { data, error } = await supabase.storage
-            .from('maid-images')
-            .upload(fileName, imageFile);
+            .from(bucketName)
+            .upload(fileName, imageFile, {
+                cacheControl: '3600',
+                upsert: false
+            });
         
         if (error) {
             console.error('Error uploading image:', error);
+            
+            // If bucket doesn't exist, provide a helpful error message
+            if (error.message && error.message.includes('bucket')) {
+                throw new Error('Storage bucket not found. Please create a bucket named "maid-images" in your Supabase project.');
+            }
+            
             throw error;
         }
         
         // Get public URL
         const { data: { publicUrl } } = supabase.storage
-            .from('maid-images')
+            .from(bucketName)
             .getPublicUrl(fileName);
         
         return publicUrl;
