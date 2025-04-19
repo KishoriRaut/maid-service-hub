@@ -75,6 +75,17 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkZ3FxeHl5b2Zqbmtoc3drd2NxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwMjQyMTMsImV4cCI6MjA1OTYwMDIxM30.YyJLLu3r2a7Mh7ny0ie-YzzLfPh5PdrJJHnBFBxWqVE';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
+        // Check user role and redirect accordingly
+        async function checkUserRoleAndRedirect(userId) {
+            try {
+                // Always redirect to role selection page
+                window.location.href = 'select-role.html';
+            } catch (error) {
+                console.error('Error checking user role:', error);
+                window.location.href = 'select-role.html';
+            }
+        }
+
         // Handle login form submission
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -96,7 +107,7 @@
                 
                 if (error) throw error;
                 
-                // Redirect to role selection page after successful login
+                // Directly redirect to role selection page
                 window.location.href = 'select-role.html';
             } catch (error) {
                 console.error('Login error:', error);
@@ -112,13 +123,15 @@
         document.getElementById('googleSignIn').addEventListener('click', async function() {
             try {
                 const { data, error } = await supabaseClient.auth.signInWithOAuth({
-                    provider: 'google'
+                    provider: 'google',
+                    options: {
+                        redirectTo: window.location.origin + '/auth/callback'
+                    }
                 });
                 
                 if (error) throw error;
                 
-                // Redirect to role selection page after successful Google sign in
-                window.location.href = 'select-role.html';
+                // The redirect will happen automatically
             } catch (error) {
                 console.error('Google sign in error:', error);
                 alert('Failed to sign in with Google. Please try again.');

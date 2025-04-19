@@ -74,24 +74,55 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkZ3FxeHl5b2Zqbmtoc3drd2NxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwMjQyMTMsImV4cCI6MjA1OTYwMDIxM30.YyJLLu3r2a7Mh7ny0ie-YzzLfPh5PdrJJHnBFBxWqVE';
         const supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Check if user is already logged in
-        async function checkSession() {
-            const { data: { session }, error } = await supabase.auth.getSession();
-            if (error) {
-                console.error('Session error:', error);
-                return;
+        // Check if user is already logged in and has a profile
+        async function checkUserProfile() {
+            try {
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError) throw sessionError;
+
+                if (!session?.user) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const userId = session.user.id;
+
+                // Check employer profile
+                const { data: employerProfile, error: employerError } = await supabase
+                    .from('employer_profiles')
+                    .select('id')
+                    .eq('user_id', userId)
+                    .single();
+
+                if (employerProfile) {
+                    window.location.href = '../dashboard/employer/dashboard.html';
+                    return;
+                }
+
+                // Check maid profile
+                const { data: maidProfile, error: maidError } = await supabase
+                    .from('maid_profiles')
+                    .select('id')
+                    .eq('user_id', userId)
+                    .single();
+
+                if (maidProfile) {
+                    window.location.href = '../dashboard/maid/dashboard.html';
+                    return;
+                }
+            } catch (error) {
+                console.error('Error checking user profile:', error);
             }
-            return session;
         }
 
         // Handle role selection
         async function selectRole(role) {
             try {
-                // Direct redirection based on role without session check
+                // Simple direct redirection based on role
                 if (role === 'employer') {
-                    window.location.href = 'create-employer_profile.html';
+                    window.location.href = '../dashboard/employer/dashboard.html';
                 } else {
-                    window.location.href = 'maid-profile-form.html';
+                    window.location.href = 'create-maid-profile.html';
                 }
             } catch (error) {
                 console.error('Error selecting role:', error);
@@ -99,18 +130,8 @@
             }
         }
 
-        // Check session on page load
-        // checkSession().then(session => {
-        //     if (session) {
-        //         // If user is logged in, redirect to appropriate dashboard
-        //         const role = session.user.user_metadata.role;
-        //         if (role === 'employer') {
-        //             window.location.href = '../dashboard/employer-dashboard.html';
-        //         } else if (role === 'maid') {
-        //             window.location.href = '../dashboard/maid-dashboard.html';
-        //         }
-        //     }
-        // });
+        // Check user profile on page load
+        window.addEventListener('load', checkUserProfile);
     </script>
 </body>
 </html> 
