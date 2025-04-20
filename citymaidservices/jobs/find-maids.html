@@ -3,320 +3,437 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Find Maids - City Maid Services</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Find Domestic Helpers - City Maid Services</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script src="../js/supabase-config.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Add Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Add Maid Card Component -->
+    <script type="module" src="../js/components/maid-card-v2.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            primary: '#4F46E5',
+                            secondary: '#4338CA',
+                            light: '#EEF2FF',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+        .profile-image {
+                @apply aspect-[3/4] object-cover object-[center_15%];
+        }
+        
+        .card-shadow {
+                @apply shadow-md transition-all duration-300;
+        }
+        
+        .card-shadow:hover {
+                @apply shadow-lg -translate-y-0.5;
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-50">
+<body class="font-poppins bg-gray-50">
     <!-- Navigation Bar -->
     <nav class="bg-white shadow-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20">
                 <div class="flex items-center">
-                    <a href="../index.html" class="text-3xl font-bold text-indigo-600 tracking-tight">City<span class="text-indigo-700"> Maid Services</span></a>
+                    <a href="../index.html" class="text-3xl font-bold text-brand-primary tracking-tight">City<span class="text-brand-secondary"> Maid Services</span></a>
                 </div>
-                <!-- Mobile menu button -->
-                <div class="flex items-center md:hidden">
-                    <button id="mobileMenuBtn" class="text-gray-700 hover:text-indigo-600 focus:outline-none" aria-label="Open menu">
-                        <i class="fas fa-bars text-2xl"></i>
-                    </button>
-                </div>
-                <!-- Desktop menu -->
                 <div class="hidden md:flex items-center space-x-6">
-                    <a href="../index.html" class="text-gray-700 hover:text-indigo-600 font-medium transition-colors">Home</a>
-                    <a href="../static/contact.html" class="text-gray-700 hover:text-indigo-600 font-medium transition-colors">Contact Us</a>
-                    <a href="../static/about.html" class="text-gray-700 hover:text-indigo-600 font-medium transition-colors">About Us</a>
-                    <a href="../auth/login.html" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 font-semibold transition-colors">Sign In</a>
-                </div>
-            </div>
-        </div>
-        <!-- Mobile menu panel -->
-        <div id="mobileMenu" class="hidden md:hidden fixed inset-0 bg-black bg-opacity-50 z-50">
-            <div class="fixed inset-y-0 right-0 max-w-xs w-full bg-white shadow-xl">
-                <div class="flex items-center justify-between p-4 border-b">
-                    <div class="flex items-center space-x-4">
-                        <button onclick="window.history.back()" class="text-gray-500 hover:text-gray-700" aria-label="Go back">
-                            <i class="fas fa-arrow-left text-xl"></i>
-                        </button>
-                        <a href="../index.html" class="text-gray-500 hover:text-gray-700" aria-label="Go to homepage">
-                            <i class="fas fa-home text-xl"></i>
-                        </a>
-                    </div>
-                    <h2 class="text-xl font-semibold text-gray-900">Menu</h2>
-                    <button id="closeMobileMenu" class="text-gray-500 hover:text-gray-700" aria-label="Close menu">
-                        <i class="fas fa-times text-2xl"></i>
-                    </button>
-                </div>
-                <div class="p-4 space-y-4">
-                    <a href="../index.html" class="block text-gray-700 hover:text-indigo-600 py-2">Home</a>
-                    <a href="../static/contact.html" class="block text-gray-700 hover:text-indigo-600 py-2">Contact Us</a>
-                    <a href="../static/about.html" class="block text-gray-700 hover:text-indigo-600 py-2">About Us</a>
-                    <a href="../auth/login.html" class="block bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 text-center font-semibold mt-4">Sign In</a>
+                    <a href="../index.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Home</a>
+                    <a href="find-maids.html" class="text-brand-primary font-semibold">Find Maids</a>
+                    <a href="find-jobs.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Find Jobs</a>
+                    <a href="../static/contact.html" class="text-gray-700 hover:text-brand-primary font-medium transition-colors">Contact Us</a>
+                    <a href="../auth/login.html" class="bg-brand-primary text-white px-6 py-3 rounded-lg hover:bg-brand-secondary font-semibold transition-colors">Sign In</a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
-        <div class="container mx-auto px-4 py-16">
-            <div class="max-w-3xl mx-auto text-center">
-                <h1 class="text-4xl md:text-5xl font-bold mb-6">Find Your Perfect Domestic Helper</h1>
-                <p class="text-xl mb-8 text-blue-100">Connect with trusted and experienced domestic helpers in your area</p>
-                
-                <!-- Search Bar -->
-                <div class="bg-white rounded-lg p-4 shadow-lg">
-                    <div class="flex flex-col md:flex-row gap-4">
-                        <div class="flex-1">
-                            <input type="text" 
-                                   id="search-input" 
-                                   placeholder="Search by name, skills, or location..." 
-                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div class="flex gap-4">
-                            <select id="city-filter" 
-                                    class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    aria-label="Filter by city">
-                                <option value="">All Cities</option>
-                                <option value="kathmandu">Kathmandu</option>
-                                <option value="lalitpur">Lalitpur</option>
-                                <option value="bhaktapur">Bhaktapur</option>
-                            </select>
-                            <select id="service-filter" 
-                                    class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    aria-label="Filter by service">
-                                <option value="">All Services</option>
-                                <option value="cooking">Cooking</option>
-                                <option value="cleaning">Cleaning</option>
-                                <option value="babysitting">Babysitting</option>
-                                <option value="elder_care">Elder Care</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Main Content -->
-    <div class="container mx-auto px-4 py-12">
-        <!-- Stats Section -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <div class="bg-white rounded-lg p-6 shadow-md text-center">
-                <i class="fas fa-users text-3xl text-blue-500 mb-4"></i>
-                <h3 class="text-2xl font-bold text-gray-800" id="total-maids">0</h3>
-                <p class="text-gray-600">Available Helpers</p>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Page Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Find Domestic Helpers</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                Browse through our verified domestic helpers and find the perfect match for your household needs.
+            </p>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                <h2 class="text-xl font-semibold text-gray-900">Search and Filter Profiles</h2>
+                <div class="relative flex-1 md:max-w-md">
+                    <input type="text" 
+                           id="searchInput" 
+                           placeholder="Search by name, skills, or location..." 
+                           class="w-full px-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent">
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                </div>
             </div>
-            <div class="bg-white rounded-lg p-6 shadow-md text-center">
-                <i class="fas fa-star text-3xl text-yellow-500 mb-4"></i>
-                <h3 class="text-2xl font-bold text-gray-800" id="avg-experience">0</h3>
-                <p class="text-gray-600">Avg. Years Experience</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="cityFilter" class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                    <select id="cityFilter" class="w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring focus:ring-brand-primary focus:ring-opacity-50">
+                        <option value="">All Locations</option>
+                        <option value="Kathmandu">Kathmandu</option>
+                        <option value="Lalitpur">Lalitpur</option>
+                        <option value="Bhaktapur">Bhaktapur</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="serviceFilter" class="block text-sm font-medium text-gray-700 mb-1">Service</label>
+                    <select id="serviceFilter" class="w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring focus:ring-brand-primary focus:ring-opacity-50">
+                    <option value="">All Services</option>
+                        <option value="Housekeeping">Housekeeping</option>
+                        <option value="Cooking">Cooking</option>
+                        <option value="Childcare">Childcare</option>
+                        <option value="Elderly Care">Elderly Care</option>
+                </select>
+                </div>
+                <div>
+                    <label for="experienceFilter" class="block text-sm font-medium text-gray-700 mb-1">Experience</label>
+                    <select id="experienceFilter" class="w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring focus:ring-brand-primary focus:ring-opacity-50">
+                        <option value="">Any Experience</option>
+                        <option value="1">1+ years</option>
+                        <option value="3">3+ years</option>
+                        <option value="5">5+ years</option>
+                </select>
+                </div>
             </div>
-            <div class="bg-white rounded-lg p-6 shadow-md text-center">
-                <i class="fas fa-check-circle text-3xl text-green-500 mb-4"></i>
-                <h3 class="text-2xl font-bold text-gray-800" id="verified-maids">0</h3>
-                <p class="text-gray-600">Verified Profiles</p>
+            <div class="mt-4 flex justify-end">
+                <button id="applyFilters" class="bg-brand-primary text-white px-6 py-2 rounded-lg hover:bg-brand-secondary transition-colors font-semibold">
+                    Apply Filters
+                </button>
             </div>
         </div>
 
-        <!-- Loading Spinner -->
-        <div id="loading-spinner" class="hidden">
-            <div class="flex justify-center items-center py-12">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <!-- Results -->
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-900">Available Profiles</h2>
+                <div class="text-sm text-gray-500">
+                    <span id="resultCount">0</span> profiles found
+                </div>
+            </div>
+            
+                <!-- Loading State -->
+            <div id="loadingState" class="flex justify-center items-center py-20">
+                    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-primary"></div>
+            </div>
+
+            <!-- Error State -->
+            <div id="errorState" class="hidden">
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+                    <p class="font-bold">Error</p>
+                    <p id="errorMessage"></p>
+                </div>
+            </div>
+
+            <!-- No Results State -->
+            <div id="noResultsState" class="hidden text-center py-12">
+                <div class="max-w-md mx-auto">
+                    <i class="fas fa-search text-gray-400 text-5xl mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">No profiles found</h3>
+                    <p class="text-gray-600 mb-4">Try adjusting your filters or check back later for new profiles.</p>
+                    <button id="resetFilters" class="text-brand-primary hover:text-brand-secondary font-semibold">
+                        Reset Filters
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Grid -->
+            <div id="resultsGrid" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <!-- Maid cards will be inserted here -->
             </div>
         </div>
 
-        <!-- Maids Container -->
-        <div id="maids-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Maid cards will be inserted here -->
-        </div>
+        <!-- Pagination -->
+        <div class="flex justify-center mt-8">
+            <nav class="flex items-center space-x-2">
+                <button id="prevPage" class="px-3 py-1 rounded-md bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" title="Previous page">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span id="pageInfo" class="px-3 py-1 text-gray-700">Page 1 of 1</span>
+                <button id="nextPage" class="px-3 py-1 rounded-md bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" title="Next page">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </nav>
     </div>
+    </main>
 
-    <script>
-        // Function to fetch and display maid profiles
-        async function fetchMaids() {
-            console.log('Starting to fetch maids...');
-            const maidsContainer = document.getElementById('maids-container');
-            const loadingSpinner = document.getElementById('loading-spinner');
-            
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">City Maid Services</h3>
+                    <p class="text-gray-400">Connecting trusted domestic helpers with employers in your area.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="../index.html" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
+                        <li><a href="find-jobs.html" class="text-gray-400 hover:text-white transition-colors">Find Jobs</a></li>
+                        <li><a href="../static/about.html" class="text-gray-400 hover:text-white transition-colors">About Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 City Maid Services. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/maid-profiles.js"></script>
+    <script type="module">
+        import { createMaidCard } from '../js/components/maid-card-v2.js';
+
+        // Elements
+        const loadingState = document.getElementById('loadingState');
+        const errorState = document.getElementById('errorState');
+        const errorMessage = document.getElementById('errorMessage');
+        const noResultsState = document.getElementById('noResultsState');
+        const resultsGrid = document.getElementById('resultsGrid');
+        const resultCount = document.getElementById('resultCount');
+        const pageInfo = document.getElementById('pageInfo');
+        const prevPageBtn = document.getElementById('prevPage');
+        const nextPageBtn = document.getElementById('nextPage');
+        const applyFiltersBtn = document.getElementById('applyFilters');
+        const resetFiltersBtn = document.getElementById('resetFilters');
+        const searchInput = document.getElementById('searchInput');
+
+        // Filter elements
+        const cityFilter = document.getElementById('cityFilter');
+        const serviceFilter = document.getElementById('serviceFilter');
+        const experienceFilter = document.getElementById('experienceFilter');
+
+        // Pagination
+        let currentPage = 1;
+        const itemsPerPage = 9;
+        let totalPages = 1;
+        let allMaids = [];
+
+        // Load maid profiles
+        async function loadMaidProfiles() {
             try {
-                // Show loading spinner
-                loadingSpinner.classList.remove('hidden');
+                // Show loading state
+                loadingState.classList.remove('hidden');
+                errorState.classList.add('hidden');
+                noResultsState.classList.add('hidden');
+                resultsGrid.innerHTML = '';
+
+                // Get filter values
+                const city = cityFilter.value;
+                const service = serviceFilter.value;
+                const experience = experienceFilter.value;
+                const searchTerm = searchInput.value.toLowerCase();
+
+                // Fetch maid profiles with filters
+                const filters = {};
+                if (city) filters.city = city;
+                if (service) filters.services = [service];
+                if (experience) filters.experience_min = parseInt(experience);
+
+                allMaids = await window.maidProfiles.fetchMaidProfiles(filters);
                 
-                // Fetch maid profiles from Supabase
-                const { data: maids, error } = await window.supabase
-                    .from('maid_profiles')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (error) {
-                    console.error('Error fetching maids:', error);
-                    throw error;
-                }
-
-                console.log('Fetched maids:', maids);
-
-                // Clear existing content
-                maidsContainer.innerHTML = '';
-
-                if (!maids || maids.length === 0) {
-                    maidsContainer.innerHTML = '<p class="text-center text-gray-500">No maid profiles found.</p>';
-                    return;
-                }
-
-                // Display each maid profile
-                maids.forEach(maid => {
-                    console.log('Processing maid:', maid);
+                // Process profile images and filter by search term
+                allMaids = allMaids.filter(maid => {
+                    const name = maid.full_name || '';
+                    const location = maid.city || '';
+                    const skills = maid.skills || [];
+                    const description = maid.description || '';
                     
-                    // Create the maid card HTML
-                    const maidCard = createMaidCard(maid);
-                    
-                    maidsContainer.appendChild(maidCard);
+                    return name.toLowerCase().includes(searchTerm) ||
+                           location.toLowerCase().includes(searchTerm) ||
+                           skills.some(skill => skill.toLowerCase().includes(searchTerm)) ||
+                           description.toLowerCase().includes(searchTerm);
                 });
 
-                // Update stats
-                updateStats(maids);
+                allMaids.forEach(maid => {
+                    const imageField = maid.profile_image || maid.profile_photo;
+                    if (!imageField) {
+                        maid.profile_image = 'https://randomuser.me/api/portraits/women/1.jpg';
+                    } else if (!imageField.startsWith('http')) {
+                        maid.profile_image = `${window.supabase.supabaseUrl}/storage/v1/object/public/maid_profile_photos/${imageField}`;
+                    }
+                });
+
+                // Update pagination
+                totalPages = Math.ceil(allMaids.length / itemsPerPage);
+                currentPage = 1;
+                updatePagination();
+                
+                // Display results
+                displayResults();
+
+                // Hide loading state
+                loadingState.classList.add('hidden');
+
             } catch (error) {
-                console.error('Error in fetchMaids:', error);
-                maidsContainer.innerHTML = '<p class="text-center text-red-500">Error loading maid profiles. Please try again later.</p>';
-            } finally {
-                // Hide loading spinner
-                loadingSpinner.classList.add('hidden');
+                console.error('Error loading maid profiles:', error);
+                errorMessage.textContent = error.message;
+                errorState.classList.remove('hidden');
+                loadingState.classList.add('hidden');
             }
         }
 
-        function createMaidCard(maid) {
-            const card = document.createElement('div');
-            card.className = 'bg-white rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl';
+        // Display results for current page
+        function displayResults() {
+            // Calculate start and end indices for current page
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, allMaids.length);
             
-            // Calculate age
-            const age = maid.date_of_birth ? calculateAge(maid.date_of_birth) : 'N/A';
+            // Get maids for current page
+            const maidsForPage = allMaids.slice(startIndex, endIndex);
             
-            card.innerHTML = `
-                <div class="relative">
-                    <img src="${maid.profile_image_url || '../images/default-profile.jpg'}" 
-                         alt="${maid.full_name}'s profile"
-                         class="w-full h-48 object-cover"
-                         onerror="this.src='../images/default-profile.jpg'">
-                    <div class="absolute top-4 right-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                        ${maid.work_type || 'Full Time'}
-                    </div>
-                </div>
-                <div class="p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xl font-bold text-gray-800">${maid.full_name}</h3>
-                        <span class="text-gray-600">${age} years</span>
-                    </div>
-                    
-                    <div class="space-y-3">
-                        <div class="flex items-center text-gray-600">
-                            <i class="fas fa-briefcase w-6"></i>
-                            <span>${maid.years_of_experience || 0} years experience</span>
-                        </div>
-                        
-                        <div class="flex items-center text-gray-600">
-                            <i class="fas fa-map-marker-alt w-6"></i>
-                            <span>${maid.city || 'Location not specified'}</span>
-                        </div>
-                        
-                        <div class="flex items-center text-gray-600">
-                            <i class="fas fa-money-bill-wave w-6"></i>
-                            <span>Rs. ${maid.expected_salary || 'Not specified'}/month</span>
-                        </div>
-                    </div>
-
-                    <div class="mt-4">
-                        <h4 class="font-semibold text-gray-700 mb-2">Skills</h4>
-                        <div class="flex flex-wrap gap-2">
-                            ${(maid.skills || []).map(skill => 
-                                `<span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">${skill}</span>`
-                            ).join('')}
-                        </div>
-                    </div>
-
-                    <div class="mt-6 flex justify-between items-center">
-                        <button onclick="handleContactClick('${maid.id}')" 
-                                class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 flex items-center gap-2">
-                            <i class="fas fa-phone"></i>
-                            Contact
-                        </button>
-                        <a href="view-profile.html?id=${maid.id}" 
-                           class="text-blue-500 hover:text-blue-600 font-semibold flex items-center gap-2">
-                            View Profile
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
-            `;
+            // Update result count
+            resultCount.textContent = allMaids.length;
             
-            return card;
-        }
-
-        // Update stats
-        function updateStats(maids) {
-            document.getElementById('total-maids').textContent = maids.length;
+            // Clear results grid
+            resultsGrid.innerHTML = '';
             
-            const totalExperience = maids.reduce((sum, maid) => sum + (maid.years_of_experience || 0), 0);
-            const avgExperience = maids.length > 0 ? (totalExperience / maids.length).toFixed(1) : 0;
-            document.getElementById('avg-experience').textContent = avgExperience;
-            
-            const verifiedCount = maids.filter(maid => maid.is_verified).length;
-            document.getElementById('verified-maids').textContent = verifiedCount;
-        }
-
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('Page loaded, initializing...');
-            fetchMaids();
-            
-            // Mobile menu toggle
-            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-            const closeMobileMenu = document.getElementById('closeMobileMenu');
-            const mobileMenu = document.getElementById('mobileMenu');
-
-            if (mobileMenuBtn && closeMobileMenu && mobileMenu) {
-                mobileMenuBtn.addEventListener('click', function() {
-                    mobileMenu.classList.remove('hidden');
-                });
-
-                closeMobileMenu.addEventListener('click', function() {
-                    mobileMenu.classList.add('hidden');
-                });
-            }
-        });
-        
-        function calculateAge(dateOfBirth) {
-            if (!dateOfBirth) return 'N/A';
-            
-            const birthDate = new Date(dateOfBirth);
-            const today = new Date();
-            
-            let age = today.getFullYear() - birthDate.getFullYear();
-            const monthDiff = today.getMonth() - birthDate.getMonth();
-            
-            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                age--;
-            }
-            
-            return age;
-        }
-        
-        function handleContactClick(maidId) {
-            // Check if user is logged in
-            const user = window.supabase.auth.user();
-            
-            if (!user) {
-                // Redirect to login page if not logged in
-                window.location.href = '../auth/login.html?redirect=jobs/find-maids.html';
+            if (maidsForPage.length === 0) {
+                noResultsState.classList.remove('hidden');
                 return;
             }
             
-            // TODO: Implement contact functionality
-            // This will be implemented when we add the payment system
-            alert('Contact functionality will be implemented with the payment system.');
+            // Create maid cards
+            maidsForPage.forEach(maid => {
+                const name = maid.full_name || 'Maid';
+                const location = maid.city || 'Location not specified';
+                const skills = maid.skills || [];
+                const experience = maid.experience_years || maid.experience || 0;
+                const rating = maid.rating || 0;
+                
+                const card = document.createElement('div');
+                card.className = 'bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300';
+                card.innerHTML = `
+                    <div class="flex flex-col h-full">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <img class="h-12 w-12 rounded-full object-cover" 
+                                 src="${maid.profile_image || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0D8ABC&color=fff`}" 
+                                 alt="${name}">
+                            <div>
+                                <h2 class="text-xl font-semibold text-gray-900">${name}</h2>
+                                <p class="text-sm text-gray-600">${location}</p>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            ${skills.slice(0, 3).map(skill => `
+                                <span class="bg-blue-100 text-blue-700 text-sm font-medium px-3 py-1 rounded-full">
+                                    ${skill}
+                                </span>
+                            `).join('')}
+                            <span class="bg-green-100 text-green-700 text-sm font-medium px-3 py-1 rounded-full">
+                                ${experience}+ Years Experience
+                            </span>
+                            ${rating ? `
+                                <span class="bg-purple-100 text-purple-700 text-sm font-medium px-3 py-1 rounded-full">
+                                    Rating: ${rating.toFixed(1)}
+                                </span>
+                            ` : ''}
+                            ${skills.length > 3 ? `
+                                <span class="bg-gray-100 text-gray-700 text-sm font-medium px-3 py-1 rounded-full">
+                                    +${skills.length - 3} more skills
+                                </span>
+                            ` : ''}
+                        </div>
+
+                        <p class="text-gray-700 mb-4 flex-grow">
+                            ${maid.description || 'Experienced maid available for housekeeping services. Skilled in cleaning, cooking, and general household tasks.'}
+                        </p>
+
+                        <div class="flex flex-col space-y-2 mt-auto">
+                            <a href="maid-details.html?id=${maid.id}" 
+                               class="bg-brand-primary hover:bg-brand-secondary text-white px-5 py-2 rounded-lg text-sm font-semibold text-center">
+                                View Profile
+                            </a>
+                            <button onclick="contactMaid('${maid.id}')" 
+                                    class="text-brand-primary hover:text-brand-secondary text-sm font-medium flex items-center justify-center">
+                                <i class="fas fa-phone mr-2"></i>
+                                Contact
+                        </button>
+                    </div>
+                </div>
+            `;
+                resultsGrid.appendChild(card);
+            });
         }
+
+        // Update pagination UI
+        function updatePagination() {
+            pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+            prevPageBtn.disabled = currentPage === 1;
+            nextPageBtn.disabled = currentPage === totalPages;
+        }
+
+        // Event listeners
+        prevPageBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                updatePagination();
+                displayResults();
+            }
+        });
+
+        nextPageBtn.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                updatePagination();
+                displayResults();
+            }
+        });
+
+        applyFiltersBtn.addEventListener('click', loadMaidProfiles);
+
+        resetFiltersBtn.addEventListener('click', () => {
+            cityFilter.value = '';
+            serviceFilter.value = '';
+            experienceFilter.value = '';
+            searchInput.value = '';
+            loadMaidProfiles();
+        });
+
+        // Add search functionality
+        searchInput.addEventListener('input', loadMaidProfiles);
+
+        // Contact maid function
+        window.contactMaid = function(maidId) {
+            // Check if user is logged in
+            const session = window.supabase.auth.getSession();
+            if (!session) {
+                window.location.href = '../auth/login.html?redirect=' + encodeURIComponent(window.location.href);
+                return;
+            }
+            
+            // Redirect to maid details page
+            window.location.href = `maid-details.html?id=${maidId}`;
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadMaidProfiles);
     </script>
 </body>
-</html> 
+</html>

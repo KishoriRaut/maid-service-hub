@@ -193,6 +193,31 @@ async function uploadProfileImage(imageFile, userId) {
     }
 }
 
+/**
+ * Get the latest maid profiles
+ * @param {number} limit - The maximum number of profiles to return
+ * @returns {Promise<Array>} - Array of maid profiles
+ */
+async function getLatestMaids(limit = 6) {
+    try {
+        const { data, error } = await supabase
+            .from('maid_profiles')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(limit);
+        
+        if (error) {
+            console.error('Error fetching latest maids:', error);
+            throw error;
+        }
+        
+        return data;
+    } catch (error) {
+        console.error('Error in getLatestMaids:', error);
+        throw error;
+    }
+}
+
 // Export functions for use in other files
 window.maidProfiles = {
     fetchMaidProfiles,
@@ -200,5 +225,6 @@ window.maidProfiles = {
     fetchMaidProfileByUserId,
     updateMaidProfile,
     deleteMaidProfile,
-    uploadProfileImage
+    uploadProfileImage,
+    getLatestMaids
 }; 
