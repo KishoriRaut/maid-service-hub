@@ -15,7 +15,8 @@
                 extend: {
                     fontFamily: {
                         poppins: ['Poppins', 'sans-serif'],
-                    },
+                    }, 
+                    
                     colors: {
                         brand: {
                             primary: '#4F46E5',
@@ -357,17 +358,8 @@
                     const maidCard = document.createElement('div');
                     maidCard.className = 'bg-white rounded-lg overflow-hidden card-shadow';
                     
-                    // Log the data being used in the template
-                    console.log('Profile image URL:', maid.profile_image_url);
-                    console.log('Work type:', maid.work_type);
-                    console.log('Full name:', maid.full_name);
-                    console.log('Years of experience:', maid.years_of_experience);
-                    console.log('Previous experience:', maid.previous_experience);
-                    console.log('Expected salary:', maid.expected_salary);
-                    
                     // Handle profile image with error handling
-                    const profileImage = maid.profile_image_url || 'images/default-profile.jpg';
-                    console.log('Using profile image:', profileImage);
+                    const profileImage = maid.profile_photo || 'images/default-profile.jpg';
                     
                     maidCard.innerHTML = `
                         <div class="relative">
@@ -380,14 +372,27 @@
                             </div>
                         </div>
                         <div class="p-6">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-1">${maid.full_name}</h3>
-                            <p class="text-gray-500 mb-2">${age} years • ${maid.years_of_experience || 0} years experience</p>
-                            <p class="text-gray-600 mb-4 truncate-2">${maid.previous_experience || 'No previous experience listed'}</p>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-1">${maid.full_name || 'Name not specified'}</h3>
+                            <p class="text-gray-500 mb-2">
+                                <i class="fas fa-user mr-2"></i>${maid.age || 'Age not specified'} years
+                                <i class="fas fa-briefcase ml-4 mr-2"></i>${maid.experience || 'Experience not specified'}
+                            </p>
+                            <p class="text-gray-600 mb-2">
+                                <i class="fas fa-map-marker-alt mr-2"></i>${maid.city || 'City not specified'}, ${maid.area || 'Area not specified'}
+                            </p>
+                            <p class="text-gray-600 mb-4 truncate-2">${maid.bio || 'No bio available'}</p>
                             <div class="flex flex-wrap gap-2 mb-4">
-                                <span class="bg-brand-light text-brand-primary px-3 py-1 rounded-full text-sm">${skillsDisplay}</span>
+                                ${maid.languages ? maid.languages.map(lang => 
+                                    `<span class="bg-brand-light text-brand-primary px-3 py-1 rounded-full text-sm">${lang}</span>`
+                                ).join('') : ''}
+                                ${maid.skills ? maid.skills.map(skill => 
+                                    `<span class="bg-brand-light text-brand-primary px-3 py-1 rounded-full text-sm">${skill}</span>`
+                                ).join('') : ''}
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-gray-700 font-medium">NPR ${maid.expected_salary || 'Not specified'}/month</span>
+                                <span class="text-gray-700 font-medium">
+                                    <i class="fas fa-money-bill-wave mr-2"></i>NPR ${maid.salary_range || 'Not specified'}/month
+                                </span>
                                 <a href="maid/view-profile.html?id=${maid.id}" class="text-brand-primary hover:text-brand-secondary font-medium">
                                     View Profile <i class="fas fa-arrow-right ml-1"></i>
                                 </a>
@@ -457,24 +462,30 @@
                     const jobCard = document.createElement('div');
                     jobCard.className = 'bg-white rounded-lg overflow-hidden card-shadow';
                     
-                    // Log the data being used in the template
-                    console.log('Job title:', job.title);
-                    console.log('Work type:', job.work_type);
-                    console.log('Description:', job.description);
-                    console.log('Salary:', job.salary);
-                    
                     jobCard.innerHTML = `
                         <div class="p-6">
                             <div class="flex justify-between items-start mb-4">
-                                <h3 class="text-xl font-semibold text-gray-900">${job.title}</h3>
+                                <h3 class="text-xl font-semibold text-gray-900">${job.title || 'Job Title Not Specified'}</h3>
                                 <span class="badge">${job.work_type || 'Not specified'}</span>
                             </div>
+                            <p class="text-gray-600 mb-2">
+                                <i class="fas fa-map-marker-alt mr-2"></i>${job.city || 'Location not specified'}, ${job.area || 'Area not specified'}
+                            </p>
                             <p class="text-gray-600 mb-4 truncate-2">${job.description || 'No description provided'}</p>
                             <div class="flex flex-wrap gap-2 mb-4">
-                                <span class="bg-brand-light text-brand-primary px-3 py-1 rounded-full text-sm">${skillsDisplay}</span>
+                                ${job.required_skills ? job.required_skills.map(skill => 
+                                    `<span class="bg-brand-light text-brand-primary px-3 py-1 rounded-full text-sm">${skill}</span>`
+                                ).join('') : ''}
                             </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-700 font-medium">NPR ${job.salary || 'Not specified'}/month</span>
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div class="flex items-center">
+                                    <i class="fas fa-money-bill-wave mr-2 text-gray-600"></i>
+                                    <span class="text-gray-700 font-medium">NPR ${job.salary || 'Not specified'}/month</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-clock mr-2 text-gray-600"></i>
+                                    <span class="text-gray-700">${job.working_time || 'Not specified'}</span>
+                                </div>
                                 <a href="jobs/view-job.html?id=${job.id}" class="text-brand-primary hover:text-brand-secondary font-medium">
                                     View Job <i class="fas fa-arrow-right ml-1"></i>
                                 </a>

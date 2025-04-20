@@ -11,10 +11,6 @@
     <script src="../js/supabase-config.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css">
     <script>
-        // Redirect to maid dashboard
-        window.location.href = "../dashboard/maid/dashboard.html";
-    </script>
-    <script>
         tailwind.config = {
             theme: {
                 extend: {
@@ -643,14 +639,21 @@
                     try {
                         // Get current user
                         const { data: { session }, error: sessionError } = await window.supabase.auth.getSession();
-                        if (sessionError) throw sessionError;
+                        if (sessionError) {
+                            console.error('Session error:', sessionError);
+                            alert('Authentication error. Please log in again.');
+                            window.location.href = 'login.html';
+                            return;
+                        }
                         
                         if (!session) {
+                            alert('You must be logged in to create a profile.');
                             window.location.href = 'login.html';
                             return;
                         }
                         
                         const userId = session.user.id;
+                        console.log('User ID:', userId);
                         
                         // Validate form fields
                         const fullName = document.getElementById('fullName').value;
@@ -667,74 +670,233 @@
                         const salaryRange = document.getElementById('salaryRange').value;
                         const bio = document.getElementById('bio').value;
                         
+                        // Validate required fields
+                        if (!fullName || !phoneNumber || !email || !age || !gender || !city || !area || !workType || !experienceYears || !workingTime || !salaryRange) {
+                            alert('Please fill in all required fields.');
+                            return;
+                        }
+                        
                         // Get selected languages
                         const languagesCheckboxes = document.querySelectorAll('input[name="languages"]:checked');
                         const languages = Array.from(languagesCheckboxes).map(cb => cb.value);
+                        
+                        if (languages.length === 0) {
+                            alert('Please select at least one language.');
+                            return;
+                        }
                         
                         // Get selected skills
                         const skillsCheckboxes = document.querySelectorAll('input[name="skills"]:checked');
                         const skills = Array.from(skillsCheckboxes).map(cb => cb.value);
                         
+                        if (skills.length === 0) {
+                            alert('Please select at least one skill.');
+                            return;
+                        }
+                        
                         // Get availability
                         const availabilityCheckboxes = document.querySelectorAll('input[name="availability"]:checked');
                         const availability = Array.from(availabilityCheckboxes).map(cb => cb.value);
+                        
+                        if (availability.length === 0) {
+                            alert('Please select at least one availability option.');
+                            return;
+                        }
                         
                         // Handle profile image upload
                         let profilePhotoUrl = null;
                         const profileImageFile = document.getElementById('profileImage').files[0];
                         
                         if (profileImageFile) {
-                            const fileExt = profileImageFile.name.split('.').pop();
-                            const fileName = `${userId}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
-                            const filePath = `profile-photos/${fileName}`;
-                            
-                            const { error: uploadError } = await window.supabase.storage
-                                .from('maid-profiles')
-                                .upload(filePath, profileImageFile);
-                            
-                            if (uploadError) throw uploadError;
-                            
-                            const { data: { publicUrl } } = window.supabase.storage
-                                .from('maid-profiles')
-                                .getPublicUrl(filePath);
-                            
-                            profilePhotoUrl = publicUrl;
+                            try {
+                                console.log('Uploading maid profile image...');
+                                
+                                // Use a simpler approach with a more basic file path
+                                const fileExt = profileImageFile.name.split('.').pop();
+                                const fileName = `${userId}.${fileExt}`;
+                                
+                                console.log('File name:', fileName);
+                                console.log('File type:', profileImageFile.type);
+                                console.log('File size:', profileImageFile.size);
+                                
+                                // Try to upload to the 'maid_profile_photos' bucket
+                                const { data, error: uploadError } = await window.supabase.storage
+                                    .from('maid_profile_photos')
+                                    .upload(fileName, profileImageFile, {
+                                        cacheControl: '3600',
+                                        upsert: true
+                                    });
+                                
+                                if (uploadError) {
+                                    console.error('Error uploading image:', uploadError);
+                                    console.error('Error details:', JSON.stringify(uploadError));
+                                    
+                                    // Try a different approach - upload to a folder structure
+                                    console.log('Trying alternative upload approach...');
+                                    
+                                    const folderPath = `${userId}/${fileName}`;
+                                    console.log('Alternative path:', folderPath);
+                                    
+                                    const { data: altData, error: altUploadError } = await window.supabase.storage
+                                        .from('maid_profile_photos')
+                                        .upload(folderPath, profileImageFile, {
+                                            cacheControl: '3600',
+                                            upsert: true
+                                        });
+                                    
+                                    if (altUploadError) {
+                                        console.error('Alternative upload also failed:', altUploadError);
+                                        throw altUploadError;
+                                    }
+                                    
+                                    console.log('Alternative upload succeeded');
+                                    
+                                    const { data: { publicUrl } } = window.supabase.storage
+                                        .from('maid_profile_photos')
+                                        .getPublicUrl(folderPath);
+                                    
+                                    profilePhotoUrl = publicUrl;
+                                } else {
+                                    console.log('Image uploaded successfully');
+                                    
+                                    const { data: { publicUrl } } = window.supabase.storage
+                                        .from('maid_profile_photos')
+                                        .getPublicUrl(fileName);
+                                    
+                                    profilePhotoUrl = publicUrl;
+                                }
+                                
+                                console.log('Public URL:', profilePhotoUrl);
+                            } catch (uploadError) {
+                                console.error('Error handling maid profile image:', uploadError);
+                                console.error('Full error details:', JSON.stringify(uploadError));
+                                
+                                // Try one more approach - direct upload without any path manipulation
+                                try {
+                                    console.log('Trying direct upload approach...');
+                                    
+                                    const { data, error: directUploadError } = await window.supabase.storage
+                                        .from('maid_profile_photos')
+                                        .upload(profileImageFile.name, profileImageFile);
+                                    
+                                    if (directUploadError) {
+                                        console.error('Direct upload also failed:', directUploadError);
+                                        alert('Error uploading profile image. Please try again or continue without an image.');
+                                    } else {
+                                        console.log('Direct upload succeeded');
+                                        
+                                        const { data: { publicUrl } } = window.supabase.storage
+                                            .from('maid_profile_photos')
+                                            .getPublicUrl(profileImageFile.name);
+                                        
+                                        profilePhotoUrl = publicUrl;
+                                        console.log('Public URL from direct upload:', profilePhotoUrl);
+                                    }
+                                } catch (directError) {
+                                    console.error('Direct upload error:', directError);
+                                    alert('Error uploading profile image. Please try again or continue without an image.');
+                                }
+                            }
                         }
                         
+                        // Get selected experience value
+                        const experienceValue = document.getElementById('experienceYears').value;
+                        console.log('Selected experience value:', experienceValue);
+                        
+                        // Make sure we're using the exact string value from the dropdown
+                        // The database constraint expects these exact values: 'fresher', '1+', '2+', etc.
+                        if (!['fresher', '1+', '2+', '3+', '4+', '5+', '10+'].includes(experienceValue)) {
+                            console.error('Invalid experience value:', experienceValue);
+                            alert('Please select a valid experience value from the dropdown.');
+                            return;
+                        }
+                        
+                        console.log('Using experience value for database:', experienceValue);
+                        
                         // Create maid profile in database
-                        const { data, error } = await window.supabase
+                        console.log('Creating maid profile in database...');
+                        
+                        // First, let's try to get the current user's profile to see if it exists
+                        const { data: existingProfile, error: profileError } = await window.supabase
                             .from('maid_profiles')
-                            .insert([
-                                {
-                                    user_id: userId,
-                                    full_name: fullName,
-                                    phone_number: phoneNumber,
-                                    email: email,
-                                    age: age,
-                                    gender: gender,
+                            .select('*')
+                            .eq('user_id', userId)
+                            .single();
+                            
+                        if (profileError && !profileError.message.includes('No rows found')) {
+                            console.error('Error checking existing profile:', profileError);
+                        }
+                        
+                        if (existingProfile) {
+                            console.log('User already has a profile:', existingProfile);
+                            alert('You already have a maid profile. Please update your existing profile instead.');
+                            window.location.href = '../dashboard/maid/edit-profile.html';
+                            return;
+                        }
+                        
+                        // Try to insert with a simpler approach - just the essential fields first
+                        try {
+                            console.log('Attempting to insert profile with minimal fields...');
+                            
+                            const minimalProfileData = {
+                                user_id: userId,
+                                full_name: fullName,
+                                phone_number: phoneNumber,
+                                email: email,
+                                age: age,
+                                gender: gender,
+                                city: city,
+                                area: area,
+                                work_type: workType,
+                                experience: experienceValue, // Use the original string value
+                                working_time: workingTime,
+                                salary_range: salaryRange
+                            };
+                            
+                            console.log('Minimal profile data:', minimalProfileData);
+                            
+                            const { data, error } = await window.supabase
+                                .from('maid_profiles')
+                                .insert([minimalProfileData]);
+                                
+                            if (error) {
+                                console.error('Error inserting minimal profile:', error);
+                                throw error;
+                            }
+                            
+                            console.log('Minimal profile inserted successfully:', data);
+                            
+                            // Now try to update with the additional fields
+                            const { data: updateData, error: updateError } = await window.supabase
+                                .from('maid_profiles')
+                                .update({
                                     religion: religion,
-                                    city: city,
-                                    area: area,
                                     profile_photo: profilePhotoUrl,
-                                    work_type: workType,
-                                    experience_years: experienceYears,
-                                    working_time: workingTime,
-                                    salary_range: salaryRange,
                                     languages: languages,
                                     skills: skills,
                                     availability: availability,
                                     bio: bio
-                                }
-                            ]);
-                        
-                        if (error) throw error;
-                        
-                        // Redirect to maid dashboard
-                        window.location.href = '../dashboard/maid/dashboard.html';
+                                })
+                                .eq('user_id', userId);
+                                
+                            if (updateError) {
+                                console.error('Error updating profile with additional fields:', updateError);
+                                // Continue anyway since the basic profile was created
+                            } else {
+                                console.log('Profile updated with additional fields:', updateData);
+                            }
+                            
+                            // Redirect to maid dashboard
+                            window.location.href = '../dashboard/maid/dashboard.html';
+                            
+                        } catch (error) {
+                            console.error('Error in profile creation process:', error);
+                            alert(`Error creating profile: ${error.message}`);
+                        }
                         
                     } catch (error) {
                         console.error('Error creating profile:', error);
-                        alert('An error occurred while creating your profile. Please try again.');
+                        alert(`An error occurred while creating your profile: ${error.message}`);
                     }
                 });
                 
